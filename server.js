@@ -29,6 +29,9 @@ const usernameRegex = /^[a-zA-Z0-9\s_]*$/;
 // git add -all
 // git status
 // git commit -m "message"
+//git checkout -b branchName - create a branch
+// git branch - check your branch
+// git checkout master - go to master branch
 
 // pm2 start ecosystem.config.js
 // pm2 stop ecosystem.config.js

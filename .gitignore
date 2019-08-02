@@ -4,3 +4,4 @@
 sessions
 data.sql
 ecosystem.config.js
+!/modifiedPackages/node_modules
