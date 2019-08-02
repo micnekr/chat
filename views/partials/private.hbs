@@ -1,0 +1,35 @@
+<!-- Get jquery -->
+<script src="{{jquerySource}}"></script>
+
+<!-- plugins -->
+<script src="../src/winFocus_plugin.js" charset="utf-8"></script>
+
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+{{#if csrfToken}}
+  <!-- csrf token -->
+  <meta name="csrf-token" content="{{csrfToken}}">
+{{/if}}
+
+<script src="/scripts/url.js"></script>
+
+<script src="/scripts/cookies.js"></script>
+<script src="/scripts/hide_enable_js_message.js"></script>
+<script src="/scripts/disconnect_without_window_focus.js"></script>
+
+{{#if ajaxErrorHandler}}
+<script src="/scripts/ajaxErrorHandler.js"></script>
+{{/if}}
+
+<link rel="stylesheet" type="text/css" href="/css/default_style.css">
+
+<script type="text/javascript">
+  $(document).ready(function () {
+    // go back on button click
+    $(".prev-page-button").click(function() {
+      window.history.back();
+    })
+  })
+</script>

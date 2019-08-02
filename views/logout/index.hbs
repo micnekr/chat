@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  {{> public}}
+
+  <title>Log out</title>
+
+  <link rel="stylesheet" type="text/css" href="/css/logout.css">
+
+  <script src="/scripts/logout.js"></script>
+</head>
+
+<body>
+  {{> enable_js}}
+  <div class="page_container">
+    <div class="header">
+    </div>
+
+    <div class="infobox">
+      <h3>Logged out successfully.</h3>
+      <div class="extra-info">
+        It is safe to leave this page.
+      </div>
+
+      <div class="login-button-container">
+        <button id="login" type="button" name="login" class="login-button">Log in</button>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

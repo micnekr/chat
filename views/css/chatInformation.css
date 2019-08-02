@@ -1,0 +1,19 @@
+html {}
+
+  .errorMessage{
+    width: 80%;
+    text-align: center;
+    color: red;
+    padding: 20px 20px;
+    border: 1px solid;
+    border-radius: 5px;
+    border-color: #a0a0a0;
+    margin: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+button.join-button, button.go-to-button{
+  width:50%;
+  margin-top: 20px;
+}

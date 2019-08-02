@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  {{> private ajaxErrorHandler="true"}}
+
+  <title>List of chats</title>
+
+  <!-- plugins -->
+  <script src="../src/jquery-ui-modified-autocomplete.js"></script>
+
+  <!-- css -->
+
+  <link rel="stylesheet" type="text/css" href="../src/jquery-ui-modified-autocomplete.min.css">
+
+  <link rel="stylesheet" type="text/css" href="/css/chatsList.css">
+
+  <!-- scripts -->
+  <script src="/scripts/toggleMenu.js"></script>
+  <script src="/scripts/autocomplete.js"></script>
+
+  <script src="/scripts/chatsList.js"></script>
+</head>
+
+<body>
+  {{> enable_js}}
+  <div class="page_container">
+    <div class="header">
+      <table class="header-aligner">
+        <tr>
+          <td>
+            {{> menu}}
+          </td>
+          <td>
+            <h3 class="header-text" id="users-chats">Your chats:</h3>
+          </td>
+          <td></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="body-container">
+      <div class="global-chat-search-container">
+        <input type="text" name="global-chat-search" id="global-chat-search" class="type-input" placeholder="Search for new chats" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      </div>
+      <div class="autocomplete-error-message"></div>
+      <div class="chats-box">
+        <table id="chats-aligner" style="width:100%">
+        </table>
+      </div>
+      <div class="create-chat-button-container horizontal-center">
+        <button type="button" class="create-chat">Create a new chat</button>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

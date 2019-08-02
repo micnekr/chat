@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  {{> private ajaxErrorHandler="true"}}
+
+  <title>Create a new chat</title>
+
+  <link rel="stylesheet" type="text/css" href="/css/createChat.css">
+
+  <script src="/scripts/createChat.js"></script>
+
+</head>
+
+<body>
+  {{> enable_js}}
+  <div class="page_container">
+    <div class="header">
+      <table class="header-aligner">
+        <tr>
+          <td>{{> backButton}}</td>
+          <td>
+            <h3 class="header-text">Create a new chat</h3>
+          </td>
+          <td></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="errorMessage"></div>
+
+    <div class="settings-box">
+      <form id="form">
+        <label for="chat-name"><b>Chat Name</b></label>
+        <input id="chat-name" type="text" placeholder="Enter the chat name" name="chat-name" required>
+
+        <button id="submit" type="submit">Create chat</button>
+      </form>
+    </div>
+  </div>
+</body>
+
+</html>

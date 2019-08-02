@@ -1,0 +1,1 @@
+module.exports.xss = require('xss');

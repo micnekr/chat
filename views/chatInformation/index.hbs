@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  {{> private ajaxErrorHandler="true"}}
+
+  <title>Chat information page</title>
+
+  <link rel="stylesheet" type="text/css" href="/css/chatInformation.css">
+
+
+  <script src="/scripts/chatInformation.js"></script>
+</head>
+
+<body>
+  {{> enable_js}}
+  <div class="page_container">
+    <div class="header">
+      <table class="header-aligner">
+        <tr>
+          <td>{{> backButton}}</td>
+          <td>
+            <h3 class="header-text"></h3>
+          </td>
+          <td></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="infobox">
+      <h3 class="chat-name"></h3>
+      <div class="errorMessage"></div>
+      <div class="extra-info">Loading...</div>
+
+      <div class="join-chat-button-container">
+        <button id="join" type="button" name="join" class="join-button">Join this chat</button>
+      </div>
+      <div class="go-to-chat-button-container">
+        <button id="go-to" type="button" name="go-to" class="go-to-button">Go to this chat</button>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,6 @@
+**/data
+**/log
+**/node_modules
+sessions
+data.sql
+ecosystem.config.js

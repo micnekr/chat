@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  {{> private}}
+
+  <title>Chat created successfuly!</title>
+
+  <link rel="stylesheet" type="text/css" href="/css/chatCreated.css">
+
+  <script src="/scripts/chatCreated.js"></script>
+
+</head>
+
+<body>
+  {{> enable_js}}
+  <div class="page_container">
+    <div class="header">
+      <table class="header-aligner">
+        <tr>
+          <td>
+          </td>
+          <td>
+            <h3 class="header-text"></h3>
+          </td>
+          <td></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="infobox">
+      <h3>Created chat successfully.</h3>
+      <div class="extra-info">
+        You can see this chat in your chats list.
+      </div>
+
+      <div class="chat-list-button-container">
+        <button id="chat-list-redirect" type="button" name="chat-list-redirect" class="chat-list-button">To the chats list</button>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
