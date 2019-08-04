@@ -32,9 +32,13 @@ const usernameRegex = /^[a-zA-Z0-9\s_]*$/;
 //git checkout -b branchName - create a branch
 // git branch - check your branch
 // git checkout master - go to master branch
+// git push -u origin master - push master branch to github
+// git pull origin master - get the changes back
 
 // pm2 start ecosystem.config.js
 // pm2 stop ecosystem.config.js
+
+
 
 
 
@@ -47,34 +51,32 @@ const usernameRegex = /^[a-zA-Z0-9\s_]*$/;
 // TODO: logout when not using page for long enough
 // TODO: csrf
 // TODO: unclosed tags in chat names
+// TODO: no capitals, use _
 
 // what I can't do now
 // TODO: email the confirmation link
 // TODO: check email address
 // TODO: captcha on signup
-// TODO: captcha on signup
 // TODO: prevent user population on signip and password reset - see previous point
 
 // maybe later
+// TODO: login rememberMe redirect check on server
 // TODO: cluster and solve memory problems
 // TODO: tests
 // TODO: end to end encryption
-// TODO: tags
+// TODO: tags for messages
 // TODO: photos, videos
 // TODO: submit a bug page
 // TODO: fix protocol
 // TODO: fix signup, sql/create chat to use transactions
 // TODO: ratelimit messages
-// TODO: move xss to client side
 // TODO: test if it is faster to send all messages or n last messages
 // TODO: add a button "show more messages"
 // TODO: change data format for getChatAndUserData
 // TODO: add messages about joining and leaving the chat
 // TODO: cache
-// TODO: add error_page
 // TODO: user profiles
 // TODO: user icons
-// TODO: header in hbs
 // TODO: change all boolean queries to be sql and merge into transaction with other statements if possible
 // TODO: change password
 // TODO: look at security and node practices
@@ -84,8 +86,10 @@ const usernameRegex = /^[a-zA-Z0-9\s_]*$/;
 // TODO: check time of request processing
 // TODO: use queries, not cookies
 // TODO: change menu to post and check for errors
-// TODO: post logout probably is not currently used
-// TODO: ratelimit creation of accounts
+
+// !!!!!!!!!!!!!!!IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!
+// TODO: move xss to client side
+
 
 
 // TODO: ngnix
@@ -173,6 +177,8 @@ let server = https.createServer(httpsOptions, app);
 server.listen(port, () => {
   logger.info("Listening at port " + port);
 });
+module.exports = server;
+
 
 
 //setup crypto
@@ -220,11 +226,20 @@ const loginLimiter = rateLimit({
   skipSuccessfulRequests: true
 });
 
-// signup ratelimit
-const signupLimiter = rateLimit({
+// unsuccessful signup ratelimit
+const signupFailLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5,
+  max: 10,
+  skipSuccessfulRequests: true,
   message: "Too many attempts to sign up. Please, try again in 15 minutes.",
+});
+
+// unsuccessful signup ratelimit
+const signupSuccessLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 15 minutes
+  max: 2,
+  skipFailedRequests: true,
+  message: "You are making too many accounts. Please, try again in an hour",
 });
 
 // sql ratelimit
@@ -277,7 +292,7 @@ hbs.registerPartial('enable_js', fs.readFileSync(__dirname + '/views/partials/en
 
 // redirect / to chatsList
 app.get("/", function(req, res) {
-  res.redirect("/chatsList")
+  res.redirect("/chats_list")
 })
 
 // error 500
@@ -294,11 +309,11 @@ app.get("/isAuthenticated", requests.isAuthenticated)
 app.get("/logout", setLogoutAnyway, auth.logout, hbs_render);
 
 // signup request
-app.post("/signUp", signupLimiter, signup.signUp);
+app.post("/signUp", signupFailLimiter, signupSuccessLimiter, signup.signUp);
 
-app.get("/signUp", hbs_render);
+app.get("/sign_up", hbs_render);
 
-app.get("/signUpSuccess", hbs_render);
+app.get("/sign_up_success", hbs_render);
 
 //protected pages
 app.use(auth.isAuthenticated);
@@ -308,20 +323,20 @@ app.post("/loadChatAndMessagingInfo", requests.getChatAndUserData);
 
 app.get("/chat", csrfProtection, hbs_render);
 
-app.get("/chatsList", hbs_render);
+app.get("/chats_list", hbs_render);
 
 // get list of user chats
 app.post("/allChats", requests.getChatsList);
 
 // creating a chat
-app.get("/chatCreated", hbs_render);
+app.get("/chat_created", hbs_render);
 
-app.get("/createChat", csrfProtection, hbs_render);
+app.get("/create_chat", csrfProtection, hbs_render);
 
 app.post("/createChat", createChatLimiter, csrfProtection, requests.addChatRequest);
 
 // joining the chat
-app.get("/chatInformation", csrfProtection, hbs_render);
+app.get("/chat_information", csrfProtection, hbs_render);
 
 app.get("/chatUsersNum", requests.replyNumOfChatUsers);
 
@@ -330,7 +345,7 @@ app.post("/joinChat", csrfProtection, requests.joinChatRequest)
 // searching for a chat
 app.get("/chatSearch", searchForChatsLimiter, requests.searchForChats);
 
-app.get("/searchForChats", hbs_render);
+app.get("/search_for_chats", hbs_render);
 
 // check if the user is in the chat
 app.get("/isUserInChat", requests.isUserInChat);
@@ -389,7 +404,7 @@ function hbs_render(req, res) {
 
   // only add csrf token if it exists
   let csrfToken = req.csrfToken ? req.csrfToken() : undefined;
-  res.render(url + "index", {
+  res.render(url.toLowerCase() + "index", {
     layout: false,
     csrfToken: csrfToken,
     jquerySource: jquerySource
@@ -410,6 +425,6 @@ function create_error_500() {
 }
 
 function create_error_402(req, res) {
-  res.statusMessage = "test error for 401 custom message";
+  res.statusMessage = "test error for 402 custom message";
   res.status(402).end();
 }

@@ -24,7 +24,7 @@ $(document).ready(function() {
       chatName: $chatName.val(),
       _csrf: token
     }, function(data) {
-      redirect("chatCreated");
+      redirect("chat_created");
     }).fail(handle_AJAX_error(showErrorMessage));
   })
 }) // end ready

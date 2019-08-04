@@ -1,4 +1,4 @@
-const successRedirect = "chatsList/"
+const successRedirect = "chats_list/"
 const rememberMeCookieExpirationTime = 30 * 24 * 60 * 60 * 1000; // 30 days
 
 let $errorMessage;

@@ -42,7 +42,7 @@ $(document).ready(function() {
 
   // when the button to create a chat is pressed, redirect
   $("button.create-chat").click(() => {
-    redirect("createChat/");
+    redirect("create_chat/");
   })
 }) // end ready
 
@@ -66,10 +66,10 @@ function redirectToChatOptionsView(event, ui) {
   createCookie("chatIdToViewInfo", ui.item.id);
   createCookie("chatNameToViewInfo", ui.item.value);
   $("#global-chat-search").autocomplete("disable");
-  redirect("chatInformation/");
+  redirect("chat_information/");
 }
 
 function redirectToAllResultsPageLink(searchQuery) {
   createCookie("chatSearchTerm", searchQuery)
-  return redirect("searchForChats");
+  return redirect("search_for_chats");
 }

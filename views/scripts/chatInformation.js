@@ -44,7 +44,7 @@ $(document).ready(function() {
     $.post(url("joinChat/"), {
       _csrf: csrfToken
     }, function(reply) {
-      redirect("chatsList/");
+      redirect("chats_list/");
     }).fail(ajaxErrorHandler)
   })
 

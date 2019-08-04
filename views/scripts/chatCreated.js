@@ -1,7 +1,7 @@
 $(document).ready(function() {
 
   $("#chat-list-redirect").click(() => {
-    redirect("chatsList/");
+    redirect("chats_list/");
   })
 
 }) // end ready

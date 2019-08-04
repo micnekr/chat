@@ -21,5 +21,5 @@ function redirectToChatOptionsView(event, ui) {
   createCookie("chatIdToViewInfo", ui.item.id);
   createCookie("chatNameToViewInfo", ui.item.value);
   $("#global-chat-search").autocomplete("disable");
-  redirect("chatInformation/");
+  redirect("chat_information/");
 }

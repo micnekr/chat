@@ -1,7 +1,8 @@
-**/data
+data/*
+!data/empty_data.pgsql
 **/log
 **/node_modules
 sessions
 data.sql
-ecosystem.config.js
 !/modifiedPackages/node_modules
+nodemailerNotes.txt
