@@ -19,7 +19,9 @@ module.exports = function(utils) {
       req.logout();
       utils.logger.debug("Logged out");
       req.session.destroy(function(err) {
-        if (err) throw new Error(err);
+        if (err) {
+          return next(err);
+        }
         utils.logger.silly("Session destroyed by logout request");
         next();
       });

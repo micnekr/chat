@@ -29,7 +29,7 @@ function requestForAutocomplete(request, response) {
           nameWithoutHTML = name.replace(/<[^>]*>/g, "")
         }
         names.push({
-          label: name,
+          label: filterXSS(name),
           value: nameWithoutHTML,
           id: data[i].id
         });

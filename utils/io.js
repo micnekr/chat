@@ -46,6 +46,10 @@ module.exports = function(utils) {
           // check permission to access chat
           sql.userAndChatDataIfHasPermission(user.id, room, (err, data) => {
 
+            if (err) {
+              throw err;
+            }
+
             // if no permission, disconnect
             if (!data) {
               socket.disconnect(true);
@@ -62,6 +66,9 @@ module.exports = function(utils) {
 
         // when someone writes a message
         socket.on('message out', (msg) => {
+          // for getting chat data
+          socket.request.query.chatId = msg.chatId;
+
           forwardMessages(msg, socket, user, userRoom, io);
         });
       });
@@ -75,7 +82,7 @@ module.exports = function(utils) {
   }
 
   // adds incoming message to database and constructs message to be sent to other people in chat
-  const constructMessage = module.constructMessage = require("./io/constructMessage")(utils, utils.maxChars);
+  const constructMessageAndAddToDB = module.constructMessageAndAddToDB = require("./io/constructMessageAndAddToDB")(utils, utils.maxChars);
 
 
 
@@ -92,7 +99,7 @@ module.exports = function(utils) {
     // construct message object
     constructMessage(msg, socket.request, (err, obj) => {
       if (err) {
-        throw new Error(err);
+        throw err;
       }
 
       // send message

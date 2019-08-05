@@ -10,7 +10,7 @@ module.exports = function(utils) {
       if (err) {
         socket.disconnect(true);
         if (err.code !== 'EBADCSRFTOKEN') {
-          return next(err)
+          throw err;
         }
       }
       next()

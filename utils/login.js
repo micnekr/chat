@@ -83,7 +83,7 @@ module.exports = function(utils, maxAge, publicChatId) {
     passport.authenticate('local', (err, user, info) => {
       // if an internal error, log it.
       if (err) {
-        throw new Error(err);
+        throw err;
       }
 
       // if not suitable password, return error message

@@ -1,8 +1,9 @@
 module.exports = function(utils, maxChars) {
   // adds incoming message to database and constructs message to be sent to other people in chat
   return function(msg, req, done) {
+    let chatId = msg.chatId
     // get chat id
-    utils.sql.getChatAndUserData(req, (err, chatId) => {
+    utils.sql.isUserInChat(req.session.passport.user.id, chatId, (err, permission) => {
 
       // if an error, return error
       if (err) {
@@ -10,7 +11,7 @@ module.exports = function(utils, maxChars) {
       }
 
       // if no permission, return
-      if (!chatId) {
+      if (!permission) {
         utils.logger.debug("No permission");
         return done(undefined, false);
       }

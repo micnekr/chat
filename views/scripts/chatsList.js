@@ -26,9 +26,8 @@ $(document).ready(function() {
   // when a chat ref is clicked, redirect
   chatsRefsAligner.on("click", "div", function() {
     let $this = $(this);
-    let id = $this.attr('id');
-    createCookie("chatId", id);
-    redirect("chat/");
+    let chatId = $this.attr('id');
+    redirect("chat/", `chatId=${chatId}`);
   });
 
   // get all chat refs
@@ -63,13 +62,10 @@ function redirectToChatOptionsView(event, ui) {
   if (ui.item.isSeeMoreOption) {
     return redirectToAllResultsPageLink(ui.item.searchQuery);
   }
-  createCookie("chatIdToViewInfo", ui.item.id);
-  createCookie("chatNameToViewInfo", ui.item.value);
   $("#global-chat-search").autocomplete("disable");
-  redirect("chat_information/");
+  redirect("chat_information/", `chatId=${ui.item.id}&name=${ui.item.label}`);
 }
 
 function redirectToAllResultsPageLink(searchQuery) {
-  createCookie("chatSearchTerm", searchQuery)
-  return redirect("search_for_chats");
+  return redirect("search_for_chats", `term=${searchQuery}`);
 }

@@ -10,16 +10,11 @@ module.exports = function(utils) {
   // response to add chat request
   module.addChatRequest = require("./response/createChat")(utils);
 
-  // replies the number of users in a chat
-  module.replyNumOfChatUsers = require("./response/replyNumOfChatUsers")(utils);
-
   module.searchForChats = require("./response/searchForChats")(utils);
 
   module.getChatAndUserData = require("./response/getChatAndUserData")(utils);
 
   module.isAuthenticated = require("./response/isAuthenticated")(utils);
-
-  module.isUserInChat = require("./response/isUserInChat")(utils);
 
   return module;
 }

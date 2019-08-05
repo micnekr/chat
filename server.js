@@ -52,6 +52,8 @@ const usernameRegex = /^[a-zA-Z0-9\s_]*$/;
 // TODO: csrf
 // TODO: unclosed tags in chat names
 // TODO: no capitals, use _
+// TODO: escape url search queries before filtering xss
+// TODO: mind xss
 
 // what I can't do now
 // TODO: email the confirmation link
@@ -84,11 +86,13 @@ const usernameRegex = /^[a-zA-Z0-9\s_]*$/;
 // TODO: user profiles in the menu
 // TODO: use hbs to choose between buttons in chatinfo and optimise further
 // TODO: check time of request processing
-// TODO: use queries, not cookies
 // TODO: change menu to post and check for errors
+// TODO: change url function to remove "/"
 
 // !!!!!!!!!!!!!!!IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!
-// TODO: move xss to client side
+
+// TODO: optimise pages with hbs
+
 
 
 
@@ -160,6 +164,7 @@ const signup = utils.signup = require('./utils/signup')(utils, saltRounds, publi
 const chatSearchSuggestions = utils.chatSearchSuggestions = require('./utils/chatSearchSuggestions')(utils);
 const messageEncrypt = utils.messageEncrypt = require('./utils/messageEncrypt')();
 const express_error_handlers = utils.express_error_handlers = require('./utils/express_error_handlers')(utils);
+const expressCustomMiddleware = require('./utils/expressCustomMiddleware')(utils);
 
 //setup server
 
@@ -319,7 +324,7 @@ app.get("/sign_up_success", hbs_render);
 app.use(auth.isAuthenticated);
 
 // sends chat data
-app.post("/loadChatAndMessagingInfo", requests.getChatAndUserData);
+app.get("/loadChatAndMessagingInfo", requests.getChatAndUserData);
 
 app.get("/chat", csrfProtection, hbs_render);
 
@@ -336,9 +341,7 @@ app.get("/create_chat", csrfProtection, hbs_render);
 app.post("/createChat", createChatLimiter, csrfProtection, requests.addChatRequest);
 
 // joining the chat
-app.get("/chat_information", csrfProtection, hbs_render);
-
-app.get("/chatUsersNum", requests.replyNumOfChatUsers);
+app.get("/chat_information", expressCustomMiddleware.isUserInChat, expressCustomMiddleware.getNumberOfChatUsers, csrfProtection, hbs_render);
 
 app.post("/joinChat", csrfProtection, requests.joinChatRequest)
 
@@ -346,9 +349,6 @@ app.post("/joinChat", csrfProtection, requests.joinChatRequest)
 app.get("/chatSearch", searchForChatsLimiter, requests.searchForChats);
 
 app.get("/search_for_chats", hbs_render);
-
-// check if the user is in the chat
-app.get("/isUserInChat", requests.isUserInChat);
 
 // if request not found, show 404 error page
 app.all("*", function(req, res, next) {
@@ -398,6 +398,8 @@ function setupExpress() {
 function hbs_render(req, res) {
   let url = req.default_hbs_url || req.path.substr(1); // delete first /
 
+  let options = req.hbs_options || {};
+
   if (!url.endsWith("/")) {
     url += "/";
   }
@@ -407,7 +409,9 @@ function hbs_render(req, res) {
   res.render(url.toLowerCase() + "index", {
     layout: false,
     csrfToken: csrfToken,
-    jquerySource: jquerySource
+    jquerySource: jquerySource,
+    isUserInChat: options.isUserInChat,
+    chatUsersNum: options.chatUsersNum
   });
 }
 

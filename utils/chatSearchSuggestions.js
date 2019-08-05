@@ -19,7 +19,7 @@ module.exports = function(utils) {
     WHERE LOWER(name) LIKE $1 `;
     sql.pool.query(query, [userInput], function(err, data) {
       if (err) {
-        return done(err, undefined);
+        return done(err);
       } else {
         return done(null, data.rows);
       }

@@ -5,7 +5,7 @@ module.exports = function(utils) {
     WHERE id=$1`
     utils.sql.get(query, [chatId], function(err, data) {
       if (err) {
-        return done(err, undefined);
+        return done(err);
       } else {
         return done(null, data.rows);
       }

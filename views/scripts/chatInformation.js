@@ -7,37 +7,26 @@ let ajaxErrorHandler = handle_AJAX_error(showErrorMessage);
 $(document).ready(function() {
 
   // get csrf token
-  let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+  let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+  let chatUsersNum = document.querySelector('meta[name="chatUsersNum"]').getAttribute('content');
 
   $header = $(".header>h3");
   $extraInfo = $(".extra-info");
-  $joinChatButton = $("#join").hide();
-  $goToChatButton = $("#go-to").hide();
+  $joinChatButton = $("#join");
+  $goToChatButton = $("#go-to");
   $errorMessage = $(".errorMessage").hide();
   $chatName = $(".chat-name");
-  chatName = getCookieValue("chatNameToViewInfo");
-  chatId = getCookieValue("chatIdToViewInfo");
-  $chatName.html(chatName);
+  chatName = getSearchQuery("name");
+  chatId = getSearchQuery("chatId");
+  $chatName.html(filterXSS(chatName));
   $header.html(chatName);
 
   // get information about the chat
-  $.get(url("chatUsersNum/"), function(num) {
-    // display it
-    let plural = (num != 1);
-    let string = plural ? "There are " + num + " people in this chat" : "There is 1 person in this chat";
-    $extraInfo.text(string);
-  }).fail(ajaxErrorHandler);
 
-  // check if need to reference join to chat link or start chatting link
-  $.get(url("isUserInChat"), {
-    chatId: chatId
-  }, function(isUserInChatResponse) {
-    if (isUserInChatResponse) {
-      $goToChatButton.show();
-    } else {
-      $joinChatButton.show();
-    }
-  }).fail(ajaxErrorHandler);
+  // num of people in chat
+  let plural = (chatUsersNum !== 1);
+  let string = plural ? "There are " + chatUsersNum + " people in this chat" : "There is 1 person in this chat";
+  $extraInfo.text(string);
 
   // join the chat
   $joinChatButton.click(function() {
@@ -50,8 +39,7 @@ $(document).ready(function() {
 
   // go to chat
   $goToChatButton.click(function() {
-    createCookie("chatId", chatId);
-    redirect("chat/");
+    redirect("chat/", `chatId=${chatId}`);
   })
 }) // end ready
 
