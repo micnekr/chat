@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <!-- Get jquery -->
+  <script src="{{jquerySource}}"></script>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Successful signup!</title>
+
+  <link rel="stylesheet" type="text/css" href="/css/default_style.css">
+
+  <link rel="stylesheet" type="text/css" href="/css/signUpSuccess.css">
+
+  <script src="/scripts/url.js"></script>
+
+  <script src="/scripts/signUpSuccess.js"></script>
+
+  <script src="/scripts/hide_enable_js_message.js"></script>
+</head>
+
+<body>
+  {{> enable_js}}
+  <div class="page_container">
+    <div class="header">
+    </div>
+
+    <div class="infobox">
+      <h3>Signed up successfully.</h3>
+      <div class="extra-info">
+        The only step left is to log in.
+      </div>
+
+      <div class="login-button-container">
+        <button id="login" type="button" name="login" class="login-button">Log in</button>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
