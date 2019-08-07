@@ -112,9 +112,7 @@ module.exports = function(utils, maxAge, publicChatId) {
   function setCookie(header, value, res) {
 
     // a bug does not let even set maxAge to undefined
-    let options = {
-      httpOnly: true
-    };
+    let options = {};
     if (maxAge) {
       options.maxAge = maxAge;
     }
