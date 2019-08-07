@@ -2,7 +2,7 @@ module.exports = function(utils) {
   const internalErrorMessage = "Internal error on server. Please, try again.";
   const nameExistsMessage = "A chat with the same name already exists. Please, choose a different name."
 
-  return function(req, res) {
+  return function(req, res, next) {
     // get data from request
     let settings = req.body;
     let userId = req.session.passport.user.id;
