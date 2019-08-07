@@ -10,7 +10,7 @@ function handle_AJAX_error(showErrorMessage) {
       // if rate limit
       let aliasText = xhr.status === 429 ? xhr.responseText : undefined;
 
-      let text = aliasText || xhr.responseText || ("Unknown error. Error code: " + xhr.status);
+      let text = aliasText || xhr.statusText || ("Unknown error. Error code: " + xhr.status);
       showErrorMessage(text);
     }
   }
