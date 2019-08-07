@@ -4,7 +4,7 @@ module.exports = function(utils) {
     let chatId = req.cookies.chatIdToViewInfo;
     utils.sql.addUserToChatIfNotAlready(userId, chatId, function(err, userWasAlreadyInChat) {
       if (err) {
-        throw new Error(err);
+        return next(err);
       } else {
         if (!userWasAlreadyInChat) {
           utils.logger.silly("User already in chat");

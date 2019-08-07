@@ -16,8 +16,7 @@ module.exports = function(utils) {
     utils.sql.addChatIfNotExists(settings.chatName, (err, uniqueName, chatId) => {
       if (err) {
         res.statusMessage = internalErrorMessage;
-        res.status(500).end();
-        throw new Error(err);
+        return next(err);
       } else {
         if (!uniqueName) {
           res.statusMessage = nameExistsMessage;
@@ -26,8 +25,7 @@ module.exports = function(utils) {
           utils.sql.addUserToChatIfNotAlready(userId, chatId, (err) => {
             if (err) {
               res.statusMessage = internalErrorMessage;
-              res.status(500).end();
-              throw new Error(err);
+              return next(err);
             }
             res.send("Success");
           })

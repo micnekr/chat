@@ -6,20 +6,20 @@ module.exports = function(utils, maxAge, publicChatId) {
   const bcrypt = utils.bcrypt;
   const passport = utils.passport;
 
+  // information about errors
+  const internalError = {
+    errorMessage: "Internal error on server. Please, try again.",
+    errorCode: 500
+  };
+  const wrongDetails = {
+    errorMessage: "Wrong details",
+    errorCode: 400
+  };
+
 
   // called to check password with passport.js
   let checkPasswordForPassport = module.checkPasswordForPassport = function(username, password, done) {
     let userExists = true;
-
-    // information about errors
-    const internalError = {
-      errorMessage: "Internal error on server. Please, try again.",
-      errorCode: 500
-    };
-    const wrongDetails = {
-      errorMessage: "Wrong details",
-      errorCode: 400
-    };
 
     // get user data
     sql.loadUserData(username, (err, user) => {
@@ -83,7 +83,8 @@ module.exports = function(utils, maxAge, publicChatId) {
     passport.authenticate('local', (err, user, info) => {
       // if an internal error, log it.
       if (err) {
-        throw new Error(err);
+        logger.error(err);
+        return res.status(500).send(internalError.errorMessage);
       }
 
       // if not suitable password, return error message
@@ -109,9 +110,10 @@ module.exports = function(utils, maxAge, publicChatId) {
   }
 
   // function to set cookies
-  function setCookie(header, value, res, age = maxAge) {
+  function setCookie(header, value, res) {
     return res.cookie(header, value, {
-      maxAge: age,
+      maxAge: maxAge,
+      httpOnly: true
     });
   }
 

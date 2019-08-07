@@ -3,6 +3,8 @@ const minPasswordSymbols = 8;
 const maxUsernameSymbols = 15;
 const maxEmailSymbols = 254;
 const usernameRegex = /^[a-zA-Z0-9\s_]*$/;
+const emailValidator_re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
 
 let $form, $username, $password, $password2, $email, $submit, $passwordWarning, $passwordFeedback, $passwordQualityProgressBar, $passwordQualityProgressBarContainer, $progressLabel, $passwordSuggestionsLabel, $errorMessage;
 
@@ -75,6 +77,11 @@ $(document).ready(function() {
       return showErrorMessage(`An email should not be longer than ${maxEmailSymbols} symbols long`);
     }
 
+    // if an email has a wrong syntax
+    if (!emailValidator_re.test(String($email.val()).toLowerCase())) {
+      return showErrorMessage("This email seems to be incorrect. Please, check it again.");
+    }
+
     // check if two passwords match
     if ($password.val() !== $password2.val()) {
       showErrorMessage("The two passwords do not match. Please, enter the passwords again.");
@@ -89,7 +96,7 @@ $(document).ready(function() {
       password: $password.val(),
       email: $email.val()
     }, function(data) {
-      redirect("signupSuccess");
+      redirect("sign_up_success");
     }).fail(handle_AJAX_error(showErrorMessage));
 
     return false;

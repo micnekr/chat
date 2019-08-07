@@ -5,6 +5,8 @@ let csrfToken;
 
 let $msgTable, $messageBox, $messageTableContainer, $charactersCounter, $errorMessage;
 
+const chatId = getSearchQuery("chatId");
+
 
 $(document).ready(function() {
 
@@ -23,7 +25,9 @@ $(document).ready(function() {
   $charactersCounter = $(".character_counter");
   $errorMessage = $(".errorMessage").hide();
 
-  $.post(url("loadChatAndMessagingInfo"), (data) => {
+  $.get(url("loadChatAndMessagingInfo"), {
+    chatId: chatId
+  }, (data) => {
 
     // the messages come reversed
     data.messages.reverse();
@@ -31,10 +35,10 @@ $(document).ready(function() {
     userName = getCookieValue("username");
     maxChars = data.maxChars;
 
-    socket.emit("Join room", getCookieValue("chatId"));
+    socket.emit("Join room", chatId);
 
     // replace with the name of the chat
-    $(".chat-name").html(data.chatName)
+    $(".chat-name").html(filterXSS(data.chatName))
 
     // limit length of message
     charCounterUpdate();
@@ -80,7 +84,7 @@ function buildMessagehtml(obj, getSide = messageSide) {
   return `<tr>
     <td>
       <div class="message ${side}">
-        <div class="name">${name}</div>
+        <div class="name">${filterXSS(name)}</div>
         <div class="content"></div>
         <span class="time">
           <sub>${time}
@@ -94,7 +98,7 @@ function buildMessagehtml(obj, getSide = messageSide) {
 function buildAndAppendMessage(obj, getSide = messageSide) {
   let messageHTMl = buildMessagehtml(obj, getSide);
   $msgTable.append(messageHTMl);
-  $(".content").last().html(obj.content);
+  $(".content").last().html(filterXSS(obj.content));
 }
 
 function refreshMessages(messages) {
@@ -136,6 +140,7 @@ function sendMessage() {
 
   msg = {};
   msg.content = messageText;
+  msg.chatId = chatId;
 
   // send the text
   socket.emit("message out", msg);

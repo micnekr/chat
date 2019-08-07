@@ -10,7 +10,7 @@ module.exports = function(utils, sql) {
       WHERE user_id=$1 AND chat_id=$2`;
     return sql.get(query, [userId, chatId], (err, data) => {
       if (err) {
-        return done(err, undefined);
+        return done(err);
       }
       let row = data.rows[0];
       if (row) {

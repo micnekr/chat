@@ -4,7 +4,7 @@
 
 const port = process.env.PORT || 8124;
 const saltRounds = 12;
-const maxAge = 1000 * 60 * 15;
+const maxAge = null; //session ends when the browser is closed
 const maxChars = 300;
 const joinPublicChat = true;
 const publicChatId = 1;
@@ -19,6 +19,8 @@ const maxUsernameSymbols = 15;
 const maxEmailSymbols = 254;
 const usernameRegex = /^[a-zA-Z0-9\s_]*$/;
 
+const isBehindProxy = true;
+
 // setImmediate
 
 // port for postgresql is 5432
@@ -32,9 +34,13 @@ const usernameRegex = /^[a-zA-Z0-9\s_]*$/;
 //git checkout -b branchName - create a branch
 // git branch - check your branch
 // git checkout master - go to master branch
+// git push -u origin master - push master branch to github
+// git pull origin master - get the changes back
 
 // pm2 start ecosystem.config.js
 // pm2 stop ecosystem.config.js
+
+
 
 
 
@@ -47,34 +53,34 @@ const usernameRegex = /^[a-zA-Z0-9\s_]*$/;
 // TODO: logout when not using page for long enough
 // TODO: csrf
 // TODO: unclosed tags in chat names
+// TODO: no capitals, use _
+// TODO: escape url search queries before filtering xss
+// TODO: mind xss
 
 // what I can't do now
 // TODO: email the confirmation link
 // TODO: check email address
 // TODO: captcha on signup
-// TODO: captcha on signup
 // TODO: prevent user population on signip and password reset - see previous point
 
 // maybe later
+// TODO: login rememberMe redirect check on server
 // TODO: cluster and solve memory problems
 // TODO: tests
 // TODO: end to end encryption
-// TODO: tags
+// TODO: tags for messages
 // TODO: photos, videos
 // TODO: submit a bug page
 // TODO: fix protocol
 // TODO: fix signup, sql/create chat to use transactions
 // TODO: ratelimit messages
-// TODO: move xss to client side
 // TODO: test if it is faster to send all messages or n last messages
 // TODO: add a button "show more messages"
 // TODO: change data format for getChatAndUserData
 // TODO: add messages about joining and leaving the chat
 // TODO: cache
-// TODO: add error_page
 // TODO: user profiles
 // TODO: user icons
-// TODO: header in hbs
 // TODO: change all boolean queries to be sql and merge into transaction with other statements if possible
 // TODO: change password
 // TODO: look at security and node practices
@@ -82,19 +88,23 @@ const usernameRegex = /^[a-zA-Z0-9\s_]*$/;
 // TODO: user profiles in the menu
 // TODO: use hbs to choose between buttons in chatinfo and optimise further
 // TODO: check time of request processing
-// TODO: use queries, not cookies
 // TODO: change menu to post and check for errors
-// TODO: post logout probably is not currently used
-// TODO: ratelimit creation of accounts
+// TODO: change url function to remove "/"
+
+// !!!!!!!!!!!!!!!IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!
+// TODO: signup search for names
+// TODO: long term login ratelimit
+// TODO: optimise pages with hbs
 
 
-// TODO: ngnix
-// TODO: redirect nginx to https
+
+
 
 // for release:
 // TODO: clear logs
-// TODO: make a valid certificate
+// TODO: clear db
 // TODO: clear node_modules
+// TODO: set constants
 
 
 
@@ -112,7 +122,6 @@ const LocalStrategy = require('passport-local').Strategy;
 const Pool = require('pg').Pool;
 const nodemailer = require("nodemailer");
 const rateLimit = require("express-rate-limit");
-const https = require('https');
 const fs = require('fs');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
@@ -156,23 +165,20 @@ const signup = utils.signup = require('./utils/signup')(utils, saltRounds, publi
 const chatSearchSuggestions = utils.chatSearchSuggestions = require('./utils/chatSearchSuggestions')(utils);
 const messageEncrypt = utils.messageEncrypt = require('./utils/messageEncrypt')();
 const express_error_handlers = utils.express_error_handlers = require('./utils/express_error_handlers')(utils);
+const expressCustomMiddleware = require('./utils/expressCustomMiddleware')(utils);
 
 //setup server
 
-// set https options
-let httpsOptions = {
+// set http/https options
+let configureServer
+if (isBehindProxy) {
+  configureServer = require('./utils/listenHTTP');
+} else {
+  configureServer = require('./utils/listenHTTPS');
+}
+let server = configureServer(utils, port, app);
+module.exports = server;
 
-  key: fs.readFileSync("data/keys/privatekey.pem"),
-
-  cert: fs.readFileSync("data/keys/certificate.pem"),
-
-  dhparam: fs.readFileSync("data/keys/dh-strong.pem")
-};
-
-let server = https.createServer(httpsOptions, app);
-server.listen(port, () => {
-  logger.info("Listening at port " + port);
-});
 
 
 //setup crypto
@@ -194,9 +200,11 @@ const sessionMiddleware = utils.sessionMiddleware = session({
   secret: secret,
   resave: false,
   saveUninitialized: false,
+  proxy: isBehindProxy,
   cookie: {
-    secure: true,
-    maxAge: maxAge
+    secure: isBehindProxy,
+    maxAge: maxAge,
+    httpOnly: true
   }
 });
 
@@ -204,9 +212,10 @@ setupExpress();
 
 // protect from csrf
 let csrfProtection = utils.csrfProtection = csrf({
+  proxy: isBehindProxy,
   cookie: {
     httpOnly: true,
-    secure: true,
+    secure: isBehindProxy,
     sameSite: true,
     maxAge: maxAge,
   }
@@ -220,11 +229,20 @@ const loginLimiter = rateLimit({
   skipSuccessfulRequests: true
 });
 
-// signup ratelimit
-const signupLimiter = rateLimit({
+// unsuccessful signup ratelimit
+const signupFailLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5,
+  max: 10,
+  skipSuccessfulRequests: true,
   message: "Too many attempts to sign up. Please, try again in 15 minutes.",
+});
+
+// unsuccessful signup ratelimit
+const signupSuccessLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 15 minutes
+  max: 2,
+  skipFailedRequests: true,
+  message: "You are creating too many accounts. Please, try again in an hour",
 });
 
 // sql ratelimit
@@ -277,7 +295,7 @@ hbs.registerPartial('enable_js', fs.readFileSync(__dirname + '/views/partials/en
 
 // redirect / to chatsList
 app.get("/", function(req, res) {
-  res.redirect("/chatsList")
+  res.redirect("/chats_list")
 })
 
 // error 500
@@ -294,46 +312,41 @@ app.get("/isAuthenticated", requests.isAuthenticated)
 app.get("/logout", setLogoutAnyway, auth.logout, hbs_render);
 
 // signup request
-app.post("/signUp", signupLimiter, signup.signUp);
+app.post("/signUp", signupFailLimiter, signupSuccessLimiter, signup.signUp);
 
-app.get("/signUp", hbs_render);
+app.get("/sign_up", hbs_render);
 
-app.get("/signUpSuccess", hbs_render);
+app.get("/sign_up_success", hbs_render);
 
 //protected pages
 app.use(auth.isAuthenticated);
 
 // sends chat data
-app.post("/loadChatAndMessagingInfo", requests.getChatAndUserData);
+app.get("/loadChatAndMessagingInfo", requests.getChatAndUserData);
 
 app.get("/chat", csrfProtection, hbs_render);
 
-app.get("/chatsList", hbs_render);
+app.get("/chats_list", hbs_render);
 
 // get list of user chats
 app.post("/allChats", requests.getChatsList);
 
 // creating a chat
-app.get("/chatCreated", hbs_render);
+app.get("/chat_created", hbs_render);
 
-app.get("/createChat", csrfProtection, hbs_render);
+app.get("/create_chat", csrfProtection, hbs_render);
 
 app.post("/createChat", createChatLimiter, csrfProtection, requests.addChatRequest);
 
 // joining the chat
-app.get("/chatInformation", csrfProtection, hbs_render);
-
-app.get("/chatUsersNum", requests.replyNumOfChatUsers);
+app.get("/chat_information", expressCustomMiddleware.isUserInChat, expressCustomMiddleware.getNumberOfChatUsers, csrfProtection, hbs_render);
 
 app.post("/joinChat", csrfProtection, requests.joinChatRequest)
 
 // searching for a chat
 app.get("/chatSearch", searchForChatsLimiter, requests.searchForChats);
 
-app.get("/searchForChats", hbs_render);
-
-// check if the user is in the chat
-app.get("/isUserInChat", requests.isUserInChat);
+app.get("/search_for_chats", hbs_render);
 
 // if request not found, show 404 error page
 app.all("*", function(req, res, next) {
@@ -353,7 +366,9 @@ app.use(express_error_handlers.clientErrorHandler);
 app.use(express_error_handlers.errorHandler);
 
 
-
+server.listen(port, () => {
+  utils.logger.info("Listening at port " + port);
+});
 
 
 // express
@@ -361,6 +376,9 @@ function setupExpress() {
   app.set('views', path.join(__dirname, 'views'));
   app.engine('hbs', hbs.__express);
   app.set('view engine', 'hbs');
+  if (isBehindProxy) {
+    app.set("trust proxy", 1);
+  }
   app.use(express.static(path.join(__dirname, "views")));
   app.use(favicon(path.join(__dirname, 'views', 'images', 'favicon.ico')));
   app.use(bodyParser.urlencoded({
@@ -383,16 +401,20 @@ function setupExpress() {
 function hbs_render(req, res) {
   let url = req.default_hbs_url || req.path.substr(1); // delete first /
 
+  let options = req.hbs_options || {};
+
   if (!url.endsWith("/")) {
     url += "/";
   }
 
   // only add csrf token if it exists
   let csrfToken = req.csrfToken ? req.csrfToken() : undefined;
-  res.render(url + "index", {
+  res.render(url.toLowerCase() + "index", {
     layout: false,
     csrfToken: csrfToken,
-    jquerySource: jquerySource
+    jquerySource: jquerySource,
+    isUserInChat: options.isUserInChat,
+    chatUsersNum: options.chatUsersNum
   });
 }
 
@@ -410,6 +432,6 @@ function create_error_500() {
 }
 
 function create_error_402(req, res) {
-  res.statusMessage = "test error for 401 custom message";
+  res.statusMessage = "test error for 402 custom message";
   res.status(402).end();
 }

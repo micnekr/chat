@@ -25,10 +25,11 @@ function requestForAutocomplete(request, response) {
         let name = data[i].name;
         let nameWithoutHTML;
         if (name) {
-          nameWithoutHTML = name.replace(/<[^>]*>/g, " ")
+          // delete all html tags
+          nameWithoutHTML = name.replace(/<[^>]*>/g, "")
         }
         names.push({
-          label: name,
+          label: filterXSS(name),
           value: nameWithoutHTML,
           id: data[i].id
         });

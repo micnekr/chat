@@ -3,14 +3,13 @@ module.exports = function(utils) {
   const internalError = "Internal error on server. Please, try again.";
 
   // handles chat load request
-  return function(req, res) {
+  return function(req, res, next) {
     // get id of the chat requested and some data
     utils.sql.getChatAndUserData(req, (err, chatId, chatAndUserInfo) => {
 
       if (err) {
         res.statusMessage = internalError;
-        res.status(500).end();
-        throw new Error(err);
+        return next(err);
       }
 
       // if no permission, return error to user
@@ -26,8 +25,7 @@ module.exports = function(utils) {
         // if internal error, return error
         if (err) {
           res.statusMessage = internalError;
-          res.status(500).end();
-          throw new Error(err);
+          return next(err);
         }
 
         data = data.rows;

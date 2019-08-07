@@ -16,8 +16,7 @@ module.exports = function(utils, saltRounds, publicChatId, joinPublicChat) {
       // internal error
       if (err) {
         res.statusMessage = internalError;
-        res.status(500).end();
-        throw new Error(err);
+        return next(err);
       }
 
       // add username, hash and password in the table
@@ -25,8 +24,7 @@ module.exports = function(utils, saltRounds, publicChatId, joinPublicChat) {
         // error handler
         if (err) {
           res.statusMessage = internalError;
-          res.status(500).end();
-          throw new Error(err);
+          return next(err);
         }
 
         // if need to add public chat
@@ -35,8 +33,7 @@ module.exports = function(utils, saltRounds, publicChatId, joinPublicChat) {
           sql.addUserToChatIfNotAlready(rows.rows[0].id, publicChatId, (err) => {
             if (err) {
               res.statusMessage = internalError;
-              res.status(500).end();
-              throw new Error(err);
+              return next(err);
             }
             res.send("Success");
           });
@@ -83,8 +80,7 @@ module.exports = function(utils, saltRounds, publicChatId, joinPublicChat) {
       // internal error
       if (err) {
         res.statusMessage = internalError;
-        res.status(500).end();
-        throw new Error(err);
+        return next(err);
       }
 
       //if user already exists

@@ -4,10 +4,14 @@
 <head>
   {{> private ajaxErrorHandler="true"}}
 
+  <meta name="chatUsersNum" content="{{chatUsersNum}}">
+
   <title>Chat information page</title>
 
   <link rel="stylesheet" type="text/css" href="/css/chatInformation.css">
 
+  <!-- xss library -->
+  <script src="https://rawgit.com/leizongmin/js-xss/master/dist/xss.js"></script>
 
   <script src="/scripts/chatInformation.js"></script>
 </head>
@@ -32,12 +36,15 @@
       <div class="errorMessage"></div>
       <div class="extra-info">Loading...</div>
 
-      <div class="join-chat-button-container">
-        <button id="join" type="button" name="join" class="join-button">Join this chat</button>
-      </div>
-      <div class="go-to-chat-button-container">
-        <button id="go-to" type="button" name="go-to" class="go-to-button">Go to this chat</button>
-      </div>
+      {{#if isUserInChat}}
+        <div class="go-to-chat-button-container">
+          <button id="go-to" type="button" name="go-to" class="go-to-button">Go to this chat</button>
+        </div>
+      {{else}}
+        <div class="join-chat-button-container">
+          <button id="join" type="button" name="join" class="join-button">Join this chat</button>
+        </div>
+      {{/if}}
     </div>
   </div>
 </body>

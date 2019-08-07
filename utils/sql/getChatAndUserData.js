@@ -8,7 +8,7 @@ module.exports = function(utils, sql) {
   // returns chat id, user id, chat name and username
   let getChatAndUserData = module.getChatAndUserData = function(req, done) {
     // get id of the user and chat the user tries to access
-    const chatId = extractChatId(req);
+    const chatId = req.query.chatId;
     const userId = req.session.passport.user.id;
 
     // if data is wrong, get data
@@ -26,17 +26,6 @@ module.exports = function(utils, sql) {
         return done(null, false);
       }
     });
-  }
-
-  // extracts chat id from request
-  function extractChatId(req) {
-    // if cookie is parsed, return it
-    if (req.cookies) {
-      return req.cookies.chatId;
-    } else {
-      // parse cookie and return it
-      return cookie.parse(req.headers.cookie).chatId;
-    }
   }
 
   return module;

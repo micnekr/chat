@@ -18,7 +18,7 @@ module.exports = function(utils) {
 
   // logs express errors
   function logErrors(err, req, res, next) {
-    utils.logger.error(err.stack);
+    utils.logger.error(err);
     next(err)
   }
 
