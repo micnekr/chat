@@ -20,7 +20,6 @@ const maxEmailSymbols = 254;
 const usernameRegex = /^[a-zA-Z0-9\s_]*$/;
 
 const isBehindProxy = true;
-const useSecureCookies = false;
 
 // setImmediate
 
@@ -93,20 +92,17 @@ const useSecureCookies = false;
 // TODO: change url function to remove "/"
 
 // !!!!!!!!!!!!!!!IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!
-// TODO: move https to nginx
-
+// TODO: signup search for names
+// TODO: long term login ratelimit
 // TODO: optimise pages with hbs
 
 
 
 
-// TODO: ngnix
-// TODO: redirect http to https
 
 // for release:
 // TODO: clear logs
 // TODO: clear db
-// TODO: make a valid certificate
 // TODO: clear node_modules
 // TODO: set constants
 
@@ -206,8 +202,9 @@ const sessionMiddleware = utils.sessionMiddleware = session({
   saveUninitialized: false,
   proxy: isBehindProxy,
   cookie: {
-    secure: useSecureCookies,
-    maxAge: maxAge
+    secure: isBehindProxy,
+    maxAge: maxAge,
+    httpOnly: true
   }
 });
 
@@ -218,7 +215,7 @@ let csrfProtection = utils.csrfProtection = csrf({
   proxy: isBehindProxy,
   cookie: {
     httpOnly: true,
-    secure: useSecureCookies,
+    secure: isBehindProxy,
     sameSite: true,
     maxAge: maxAge,
   }
@@ -380,7 +377,7 @@ function setupExpress() {
   app.engine('hbs', hbs.__express);
   app.set('view engine', 'hbs');
   if (isBehindProxy) {
-    app.set("trust proxy", "loopback");
+    app.set("trust proxy", 1);
   }
   app.use(express.static(path.join(__dirname, "views")));
   app.use(favicon(path.join(__dirname, 'views', 'images', 'favicon.ico')));

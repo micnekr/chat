@@ -113,6 +113,7 @@ module.exports = function(utils, maxAge, publicChatId) {
   function setCookie(header, value, res) {
     return res.cookie(header, value, {
       maxAge: maxAge,
+      httpOnly: true
     });
   }
 
