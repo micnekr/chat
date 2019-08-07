@@ -101,7 +101,6 @@ module.exports = function(utils, maxAge, publicChatId) {
         }
         // set cookies of username and current chat
         setCookie("username", req.session.passport.user.username, res);
-        setCookie("chatId", publicChatId, res);
 
         // return success
         return res.send("Success.");
@@ -111,10 +110,15 @@ module.exports = function(utils, maxAge, publicChatId) {
 
   // function to set cookies
   function setCookie(header, value, res) {
-    return res.cookie(header, value, {
-      maxAge: maxAge,
+
+    // a bug does not let even set maxAge to undefined
+    let options = {
       httpOnly: true
-    });
+    };
+    if (maxAge) {
+      options.maxAge = maxAge;
+    }
+    return res.cookie(header, value, options);
   }
 
   return module;
