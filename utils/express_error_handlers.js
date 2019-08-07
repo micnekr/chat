@@ -26,6 +26,7 @@ module.exports = function(utils) {
   function clientErrorHandler(err, req, res, next) {
     // if an AJAX request
     if (req.xhr) {
+      res.statusMessage = "Server error";
       return res.status(500).send("Server error");
     } else {
       next(err)

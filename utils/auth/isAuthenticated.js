@@ -4,7 +4,7 @@ module.exports = function(utils) {
       return next();
     utils.logger.warn("Not authenticated");
     if (req.method == "POST") {
-      return res.sendStatus(401);
+      return res.sendStatus(401).end();
     }
     return res.redirect("/login");
   }

@@ -35,11 +35,11 @@ module.exports = function(utils, saltRounds, publicChatId, joinPublicChat) {
               res.statusMessage = internalError;
               return next(err);
             }
-            res.send("Success");
+            res.end();
           });
           // else, just end the request
         } else {
-          res.send("Success");
+          res.end();
         }
       });
     });

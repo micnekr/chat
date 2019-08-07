@@ -84,11 +84,13 @@ module.exports = function(utils, maxAge, publicChatId) {
       // if an internal error, log it.
       if (err) {
         logger.error(err);
+        res.statusMessage = internalError.errorMessage
         return res.status(500).send(internalError.errorMessage);
       }
 
       // if not suitable password, return error message
       if (!user) {
+        res.statusMessage = info.errorMessage
         return res.status(info.errorCode).send(info.errorMessage);
       }
 
@@ -103,7 +105,7 @@ module.exports = function(utils, maxAge, publicChatId) {
         setCookie("username", req.session.passport.user.username, res);
 
         // return success
-        return res.send("Success.");
+        return res.end();
       });
     })(req, res, next);
   }
