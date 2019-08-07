@@ -31,7 +31,8 @@ $(document).ready(function() {
   // join the chat
   $joinChatButton.click(function() {
     $.post(url("joinChat/"), {
-      _csrf: csrfToken
+      _csrf: csrfToken,
+      chatId: chatId
     }, function(reply) {
       redirect("chats_list/");
     }).fail(ajaxErrorHandler)

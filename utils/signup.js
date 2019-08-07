@@ -10,7 +10,7 @@ module.exports = function(utils, saltRounds, publicChatId, joinPublicChat) {
   const bcrypt = utils.bcrypt;
   const xss = utils.xss;
 
-  function addUserToDB(req, res) {
+  function addUserToDB(req, res, next) {
     // get password hash
     bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
       // internal error
