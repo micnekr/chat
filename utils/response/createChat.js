@@ -27,7 +27,7 @@ module.exports = function(utils) {
               res.statusMessage = internalErrorMessage;
               return next(err);
             }
-            res.send("Success");
+            res.end();
           })
         }
       }

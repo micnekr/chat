@@ -8,6 +8,7 @@ module.exports = function(utils) {
       } else {
         if (!userWasAlreadyInChat) {
           utils.logger.silly("User already in chat");
+          res.statusMessage = "The user was already in chat";
           return res.send("The user was already in chat");
         }
         res.send("Success");

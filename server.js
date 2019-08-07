@@ -90,6 +90,7 @@ const isBehindProxy = false;
 // TODO: check time of request processing
 // TODO: change menu to post and check for errors
 // TODO: change url function to remove "/"
+// TODO: unify res.statusMessage or res.send
 
 // !!!!!!!!!!!!!!!IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!
 // TODO: signup search for names
