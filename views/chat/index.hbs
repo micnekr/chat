@@ -48,7 +48,8 @@
         <table class="send-message-table">
           <tr>
             <td>
-              <textarea name="type-message" class="type-message" id="type-message" rows="4" placeholder="Type your message here"></textarea>
+              <!-- no autocorrection -->
+              <textarea name="type-message" class="type-message" id="type-message" rows="4" placeholder="Type your message here" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
             </td>
             <td style="width:20%">
               <button type="button" class="send-button" id="send-message-button">Send</button><div class="character_counter">

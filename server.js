@@ -4,7 +4,7 @@
 
 const port = process.env.PORT || 8124;
 const saltRounds = 12;
-const maxAge = 1000 * 60 * 15;
+const maxAge = null; //session ends when the browser is closed
 const maxChars = 300;
 const joinPublicChat = true;
 const publicChatId = 1;
@@ -18,6 +18,9 @@ const maxChatNameLength = 40;
 const maxUsernameSymbols = 15;
 const maxEmailSymbols = 254;
 const usernameRegex = /^[a-zA-Z0-9\s_]*$/;
+
+const isBehindProxy = true;
+const useSecureCookies = false;
 
 // setImmediate
 
@@ -90,6 +93,7 @@ const usernameRegex = /^[a-zA-Z0-9\s_]*$/;
 // TODO: change url function to remove "/"
 
 // !!!!!!!!!!!!!!!IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!
+// TODO: move https to nginx
 
 // TODO: optimise pages with hbs
 
@@ -97,12 +101,14 @@ const usernameRegex = /^[a-zA-Z0-9\s_]*$/;
 
 
 // TODO: ngnix
-// TODO: redirect nginx to https
+// TODO: redirect http to https
 
 // for release:
 // TODO: clear logs
+// TODO: clear db
 // TODO: make a valid certificate
 // TODO: clear node_modules
+// TODO: set constants
 
 
 
@@ -120,7 +126,6 @@ const LocalStrategy = require('passport-local').Strategy;
 const Pool = require('pg').Pool;
 const nodemailer = require("nodemailer");
 const rateLimit = require("express-rate-limit");
-const https = require('https');
 const fs = require('fs');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
@@ -168,20 +173,14 @@ const expressCustomMiddleware = require('./utils/expressCustomMiddleware')(utils
 
 //setup server
 
-// set https options
-let httpsOptions = {
-
-  key: fs.readFileSync("data/keys/privatekey.pem"),
-
-  cert: fs.readFileSync("data/keys/certificate.pem"),
-
-  dhparam: fs.readFileSync("data/keys/dh-strong.pem")
-};
-
-let server = https.createServer(httpsOptions, app);
-server.listen(port, () => {
-  logger.info("Listening at port " + port);
-});
+// set http/https options
+let configureServer
+if (isBehindProxy) {
+  configureServer = require('./utils/listenHTTP');
+} else {
+  configureServer = require('./utils/listenHTTPS');
+}
+let server = configureServer(utils, port, app);
 module.exports = server;
 
 
@@ -205,8 +204,9 @@ const sessionMiddleware = utils.sessionMiddleware = session({
   secret: secret,
   resave: false,
   saveUninitialized: false,
+  proxy: isBehindProxy,
   cookie: {
-    secure: true,
+    secure: useSecureCookies,
     maxAge: maxAge
   }
 });
@@ -215,9 +215,10 @@ setupExpress();
 
 // protect from csrf
 let csrfProtection = utils.csrfProtection = csrf({
+  proxy: isBehindProxy,
   cookie: {
     httpOnly: true,
-    secure: true,
+    secure: useSecureCookies,
     sameSite: true,
     maxAge: maxAge,
   }
@@ -244,7 +245,7 @@ const signupSuccessLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 15 minutes
   max: 2,
   skipFailedRequests: true,
-  message: "You are making too many accounts. Please, try again in an hour",
+  message: "You are creating too many accounts. Please, try again in an hour",
 });
 
 // sql ratelimit
@@ -368,7 +369,9 @@ app.use(express_error_handlers.clientErrorHandler);
 app.use(express_error_handlers.errorHandler);
 
 
-
+server.listen(port, () => {
+  utils.logger.info("Listening at port " + port);
+});
 
 
 // express
@@ -376,6 +379,9 @@ function setupExpress() {
   app.set('views', path.join(__dirname, 'views'));
   app.engine('hbs', hbs.__express);
   app.set('view engine', 'hbs');
+  if (isBehindProxy) {
+    app.set("trust proxy", "loopback");
+  }
   app.use(express.static(path.join(__dirname, "views")));
   app.use(favicon(path.join(__dirname, 'views', 'images', 'favicon.ico')));
   app.use(bodyParser.urlencoded({

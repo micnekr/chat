@@ -47,7 +47,8 @@ module.exports = function(utils) {
           sql.userAndChatDataIfHasPermission(user.id, room, (err, data) => {
 
             if (err) {
-              throw err;
+              socket.disconnect(true);
+              return logger.error(err);
             }
 
             // if no permission, disconnect
@@ -97,9 +98,10 @@ module.exports = function(utils) {
     msg.user = user;
 
     // construct message object
-    constructMessage(msg, socket.request, (err, obj) => {
+    constructMessageAndAddToDB(msg, socket.request, (err, obj) => {
       if (err) {
-        throw err;
+        socket.disconnect(true);
+        return logger.error(err);
       }
 
       // send message
