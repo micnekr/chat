@@ -21,10 +21,6 @@ module.exports = function(utils) {
   // gets data about messages of chat
   let getChatMessages = module.getChatMessages = simpleQueries.getChatMessages;
 
-  // gets a list of user's chats
-  let getChatsList = module.getChatsList = simpleQueries.getChatsList;
-
-
 
 
   // true or false queries
@@ -44,18 +40,6 @@ module.exports = function(utils) {
   // add user to chat if he wasn't there already
   let addUserToChatIfNotAlready = module.addUserToChatIfNotAlready = addUserToChatModule.addUserToChatIfNotAlready;
 
-
-
-
-
-  const getChatAndUserDataModule = module.getChatAndUserDataModule = require('./sql/getChatAndUserData')(utils, module);
-
-  // returns chat id, user id, chat name and username
-  let getChatAndUserData = module.getChatAndUserData = getChatAndUserDataModule.getChatAndUserData;
-
-  // returns true if chat exsists, false if it does not
-  const checkIfChatExists = module.checkIfChatExists = require('./sql/checkIfChatExists')(utils, module);
-
   const getChatUsersNumber = module.getChatUsersNumber = require('./sql/getChatUsersNumber')(utils);
 
   const selectNMessages = module.selectNMessages = require("./sql/selectNMessages")(utils);
@@ -64,8 +48,6 @@ module.exports = function(utils) {
   const createChat = module.createChat = require('./sql/createChat')(utils);
 
   const addChatIfNotExists = module.addChatIfNotExists = createChat.addChatIfNotExists;
-
-  const addChatWithoutCheck = module.addChatWithoutCheck = createChat.addChatWithoutCheck;
 
   // multiple queries
   const pgMultiple = require('./sql/pgMultiple')(utils);

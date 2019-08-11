@@ -21,21 +21,22 @@ $(document).ready(function() {
   });
 
   // table which centers chat suggestions
-  let chatsRefsAligner = $("#chats-aligner");
+  let $chatsRefsAligner = $("#chats-aligner");
 
   // when a chat ref is clicked, redirect
-  chatsRefsAligner.on("click", "div", function() {
+  $chatsRefsAligner.on("click", "div", function() {
     let $this = $(this);
     let chatId = $this.attr('id');
     redirect("chat/", `chatId=${chatId}`);
   });
 
   // get all chat refs
-  $.post(url("allChats/"), (data) => {
+  $.get(url("allChats/"), (data) => {
 
     // sort them and display
     data.sort(sortByNumberOfPeople);
-    addRefs(data, chatsRefsAligner)
+
+    addRefs(data, $chatsRefsAligner)
   }).fail(handle_AJAX_error(showErrorMessage))
 
 
@@ -51,9 +52,9 @@ function buildChatRef(object) {
 }
 
 // adds all chat refs
-function addRefs(chats, chatsRefsAligner) {
+function addRefs(chats, $chatsRefsAligner) {
   for (chat of chats) {
-    chatsRefsAligner.append(buildChatRef(chat));
+    $chatsRefsAligner.append(buildChatRef(chat));
   }
 }
 

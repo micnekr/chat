@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  {{> private ajaxErrorHandler="true"}}
+
+  <title>Manage chats</title>
+
+  <!-- css -->
+
+  <link rel="stylesheet" type="text/css" href="/css/manage_chats.css">
+
+  <!-- scripts -->
+  <script src="/scripts/manage_chats.js"></script>
+</head>
+
+<body>
+  {{> enable_js}}
+  <div class="page_container">
+    <div class="header">
+      <table class="header-aligner">
+        <tr>
+          <td>
+            {{> backButton}}
+          </td>
+          <td>
+            <h3 class="header-text" id="users-chats">Pick a chat to manage:</h3>
+          </td>
+          <td></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="body-container">
+      <div class="error-message"></div>
+      <div class="chats-box">
+        <table id="chats-aligner" style="width:100%">
+        </table>
+      </div>
+      <div class="create-chat-button-container horizontal-center">
+        <button type="button" class="create-chat">Create a new chat</button>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

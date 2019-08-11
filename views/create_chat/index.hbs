@@ -7,6 +7,11 @@
 
   <title>Create a new chat</title>
 
+  <!-- JQuery ui -->
+  <link rel="stylesheet" type="text/css" href="/src/jquery-ui-checkbox-radio.min.css">
+
+  <script src="/src/jquery-ui-checkbox-radio.min.js"></script>
+
   <link rel="stylesheet" type="text/css" href="/css/createChat.css">
 
   <script src="/scripts/createChat.js"></script>
@@ -32,8 +37,16 @@
 
     <div class="settings-box">
       <form id="form">
-        <label for="chat-name"><b>Chat Name</b></label>
+        <h4 for="chat-name"><b>Chat Name</b></h4>
         <input id="chat-name" type="text" placeholder="Enter the chat name" name="chat-name" required>
+
+        <fieldset>
+          <legend>Chat addmission type</legend>
+          <label for="free-join" class="radio-label">Anyone can join</label>
+          <input type="radio" class="chat-admission-type-checkbox" name="chat-admission-type-checkbox" id="free-join">
+          <label for="u-req" class="radio-label">By user request</label>
+          <input type="radio" class="chat-admission-type-checkbox" name="chat-admission-type-checkbox" id="u-req">
+        </fieldset>
 
         <button id="submit" type="submit">Create chat</button>
       </form>

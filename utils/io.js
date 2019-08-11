@@ -48,7 +48,8 @@ module.exports = function(utils) {
 
             if (err) {
               socket.disconnect(true);
-              return logger.error(err);
+              console.log(err);
+              return logger.error(err.stack);
             }
 
             // if no permission, disconnect
@@ -101,7 +102,8 @@ module.exports = function(utils) {
     constructMessageAndAddToDB(msg, socket.request, (err, obj) => {
       if (err) {
         socket.disconnect(true);
-        return logger.error(err);
+        console.log(err);
+        return logger.error(err.stack);
       }
 
       // send message

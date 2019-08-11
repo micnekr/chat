@@ -40,6 +40,10 @@
         <div class="go-to-chat-button-container">
           <button id="go-to" type="button" name="go-to" class="go-to-button">Go to this chat</button>
         </div>
+      {{else if admissionByRequest}}
+        <div class="request-admission-button-container">
+          <button id="request-admission" type="button" name="request-admission" class="request-admission-button">Request to join this chat</button>
+        </div>
       {{else}}
         <div class="join-chat-button-container">
           <button id="join" type="button" name="join" class="join-button">Join this chat</button>

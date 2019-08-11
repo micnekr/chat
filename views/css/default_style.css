@@ -11,6 +11,13 @@ html {}
     background-size: 42px 42px;
   }
 
+  .body-container{
+    height: 70vh;
+    width:70%;
+    margin: auto;
+    margin-top: 10px;
+  }
+
   .prev-page-button {
     width: 3vh;
     height: 3vh;
@@ -138,7 +145,8 @@ div.menu-bar {
   border-radius: 2px;
 }
 
-div.menu-bars-container{
+div.menu-icon-container{
+  position: relative; /*to position notifications icon*/
   width: 28px;
   padding: 0px;
 }
@@ -150,9 +158,31 @@ div.menu-bars-container{
   border-radius: 5px;
   border-color: #b0b0b0;
   padding: 20px 20px;
+  margin: 10px;
   background-color: white;
 }
 
 .menu-option:hover{
   background-color: #f0f0f0;
+}
+
+.notification-circle {
+  display: none; /*hide*/
+
+  width: 20px;
+  height: 20px;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+
+  position: absolute;
+  top: -10px;
+  right: -10px;
+
+  text-align: center;
+  vertical-align: middle;
+  line-height: 20px;       /* The same as your div height */
+  background-color: orange;
+  color: white;
+  font-size: 13px;
 }

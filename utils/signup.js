@@ -30,7 +30,7 @@ module.exports = function(utils, saltRounds, publicChatId, joinPublicChat) {
         // if need to add public chat
         if (joinPublicChat) {
           // add to chat and end the request
-          sql.addUserToChatIfNotAlready(rows.rows[0].id, publicChatId, (err) => {
+          sql.addUserToChatIfNotAlready(rows.rows[0].id, publicChatId, undefined, undefined, (err) => {
             if (err) {
               res.statusMessage = internalError;
               return next(err);

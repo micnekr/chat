@@ -1,11 +1,6 @@
 html {}
 
-  #global-chat-search{
-    width:100%;
-    border-radius: 5px;
-  }
-
-  .autocomplete-error-message{
+  .error-message{
     text-align: center;
     color: red;
     padding: 20px 20px;
@@ -15,12 +10,6 @@ html {}
     margin: auto;
     margin-top: 20px;
     margin-bottom: 20px;
-  }
-
-  .global-chat-search-container{
-    width:70%;
-    margin: auto;
-    margin-bottom: 10px;
   }
 
 .chats-box{
@@ -34,6 +23,7 @@ html {}
 }
 
 .chat-ref{
+  position: relative;
   overflow-wrap: break-word;
   word-wrap: break-word;
   border: 1px solid;
@@ -45,16 +35,6 @@ html {}
 
 .chat-ref:hover{
   background-color: #f0f0f0;
-}
-
-input[type=text] {
-  width: 100%;
-  padding: 12px 20px;
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid #a0a0a0;
-  border-radius: 5px;
-  box-sizing: border-box;
 }
 
 button.create-chat{

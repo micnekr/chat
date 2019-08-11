@@ -1,6 +1,5 @@
 function handle_AJAX_error(showErrorMessage) {
   return function(xhr) {
-    console.log(xhr);
     // if authentication  error
     if (xhr.status === 401) {
       return redirect("login/")

@@ -38,3 +38,22 @@ div.errorMessage{
   margin: auto;
   margin-top: 20px;
 }
+
+fieldset{
+  width: 80%;
+  border: 1px solid;
+  border-radius: 5px;
+  border-color: #a0a0a0;
+  padding: 20px 20px;
+  margin: auto;
+  margin-top: 20px;
+}
+
+legend, h4{
+  text-align: center;
+  margin: 10px;
+}
+
+.radio-label{
+  width: 40%;
+}

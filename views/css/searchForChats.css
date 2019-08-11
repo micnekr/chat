@@ -22,13 +22,6 @@ html {}
   padding: 20px 20px;
 }
 
-.body-container{
-  height: 80vh;
-  width:70%;
-  margin: auto;
-  margin-top: 10px;
-}
-
 #global-chat-search{
   width:100%;
   border-radius: 5px;

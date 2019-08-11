@@ -10,7 +10,8 @@ module.exports = function(utils) {
       if (err) {
         socket.disconnect(true);
         if (err.code !== 'EBADCSRFTOKEN') {
-          utils.logger.error(err);
+          console.log(err);
+          utils.logger.error(err.stack);
         }
       } else {
         next()

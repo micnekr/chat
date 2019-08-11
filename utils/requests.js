@@ -5,7 +5,7 @@ module.exports = function(utils) {
   module.getChatsList = require('./response/getChatsList')(utils);
 
   // response to add user to chat request
-  module.joinChatRequest = require("./response/joinChatRequest")(utils);
+  module.joinChat = require("./response/joinChat")(utils);
 
   // response to add chat request
   module.addChatRequest = require("./response/createChat")(utils);
@@ -15,6 +15,16 @@ module.exports = function(utils) {
   module.getChatAndUserData = require("./response/getChatAndUserData")(utils);
 
   module.isAuthenticated = require("./response/isAuthenticated")(utils);
+
+  module.requestAdmission = require('./response/requestAdmission')(utils);
+
+  module.getNotificationsNum = require("./response/getNotificationsNum")(utils);
+
+  module.getAdminChatsListAndNotifications = require("./response/getAdminChatsListAndNotifications")(utils);
+
+  module.getListOfAdmissionsRequests = require("./response/getListOfAdmissionsRequests")(utils);
+
+  module.acceptOrRejectAdmissionRequest = require("./response/acceptOrRejectAdmissionRequest")(utils);
 
   return module;
 }

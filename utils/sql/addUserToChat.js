@@ -1,33 +1,66 @@
 module.exports = function(utils, sql) {
 
-  let addUserToChat = module.addUserToChat = function(userId, chatId, done) {
-    const Query = utils.sql.Query;
+  let addUserToChat = module.addUserToChat = function(userId, chatId, client, done, finish) {
 
-    let query = [];
-    query.push(new Query("BEGIN"));
-    query.push(new Query("INSERT INTO chat_users (chat_id, user_id) VALUES ( $1, $2 );", [chatId, userId]));
-    query.push(new Query("UPDATE chats SET num_of_users = num_of_users + 1 WHERE id = $1;", [chatId]));
-    query.push(new Query("COMMIT"));
+    // if already opened client session
+    if (client && done) {
+      return __addUserToChat(userId, chatId, client, done, finish);
+    }
 
-    // insert data in database and increase the counter for the chat users
-    sql.multipleQuery(query, (err) => {
+    // create a new session
+    utils.sql.pool.connect(function(err, client, done) {
+      if (err) return next(err)
+
+      return __addUserToChat(userId, chatId, client, done, function(err, wasAdded) {
+        // close the session
+        done()
+        return finish(err, wasAdded);
+      });
+    })
+  }
+
+  function __addUserToChat(userId, chatId, client, done, finish) {
+    // a utility to automatically log and disconnect on error
+    function disconnectOnError(err) {
       if (err) {
-        return done(err);
+        // disconnect the client
+        done();
+        return finish(err);
       }
-      return done(null, true);
+    }
 
-    });
+    client.query("BEGIN", [], function(err) {
+      disconnectOnError(err);
+
+      // add the user to the chat
+      client.query("INSERT INTO chat_users (chat_id, user_id) VALUES ( $1, $2 );", [chatId, userId], function(err) {
+        disconnectOnError(err);
+
+        // increase chat users counter
+        client.query("UPDATE chats SET num_of_users = num_of_users + 1 WHERE id = $1;", [chatId], function(err) {
+          disconnectOnError(err);
+
+          // commit
+          client.query("COMMIT", [], function(err) {
+            disconnectOnError(err);
+
+            // do not forget to close the session
+            return finish(null, true)
+          })
+        })
+      })
+    })
   }
 
   // adds user to chat if he wasn't there already
-  let addUserToChatIfNotAlready = module.addUserToChatIfNotAlready = function(userId, chatId, done) {
+  let addUserToChatIfNotAlready = module.addUserToChatIfNotAlready = function(userId, chatId, client, done, finish) {
     sql.isUserInChat(userId, chatId, function(err, isInChat) {
       if (err) {
-        return done(err, undefined);
+        return finish(err, undefined);
       } else if (isInChat) {
-        return done(null, false);
+        return finish(null, false);
       } else {
-        addUserToChat(userId, chatId, done);
+        addUserToChat(userId, chatId, client, done, finish);
       }
     })
   }

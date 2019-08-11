@@ -4,9 +4,15 @@ module.exports = function(utils) {
 
   // handles chat load request
   return function(req, res, next) {
-    // get id of the chat requested and some data
-    utils.sql.getChatAndUserData(req, (err, chatId, chatAndUserInfo) => {
+    // get id of the user and chat the user tries to access
+    const chatId = req.query.chatId;
+    const userId = req.session.passport.user.id;
 
+    // if data is wrong, get data
+    // get id of the chat requested and some data
+    utils.sql.userAndChatDataIfHasPermission(userId, chatId, (err, chatAndUserInfo) => {
+
+      // throw errors
       if (err) {
         res.statusMessage = internalError;
         return next(err);
@@ -14,10 +20,11 @@ module.exports = function(utils) {
 
       // if no permission, return error to user
       if (!chatId || !chatAndUserInfo) {
-        utils.logger.debug("No permission for chat");
+        utils.logger.silly("No permission for chat");
         return res.status(401).end();
       }
 
+      // the user has permission
       utils.logger.silly("Loading messages from chat " + chatId);
 
       // load messages
