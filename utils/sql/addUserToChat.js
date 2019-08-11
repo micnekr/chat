@@ -9,7 +9,10 @@ module.exports = function(utils, sql) {
 
     // create a new session
     utils.sql.pool.connect(function(err, client, done) {
-      if (err) return next(err)
+      if (err) {
+        done();
+        return finish(err)
+      }
 
       return __addUserToChat(userId, chatId, client, done, function(err, wasAdded) {
         // close the session

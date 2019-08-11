@@ -96,16 +96,8 @@ const isBehindProxy = true;
 // TODO: review user and chat data if has permission usages
 
 // !!!!!!!!!!!!!!!IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!
-// TODO: long term login ratelimit
 // TODO: sort chats on chatslist
 // TODO: refactor
-// TODO: begin-commit:
-//requestAdmission.js
-// addUserToChat
-// signup
-
-//add user to chat if not already:
-// accept or reject...
 
 
 
@@ -240,20 +232,36 @@ const loginLimiter = rateLimit({
   skipSuccessfulRequests: true
 });
 
+// long-term signup limit
+const longTermLoginLimiter = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000, // 1 day
+  max: 20,
+  message: "Too many attempts to log in. Please, try again in 24 hours.",
+  skipSuccessfulRequests: true
+});
+
 // unsuccessful signup ratelimit
 const signupFailLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 15 * 60 * 1000, // 1 hour
   max: 10,
   skipSuccessfulRequests: true,
   message: "Too many attempts to sign up. Please, try again in 15 minutes.",
 });
 
-// unsuccessful signup ratelimit
+// successful signup ratelimit
 const signupSuccessLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 15 minutes
+  windowMs: 60 * 60 * 1000, // 1 hour
   max: 2,
   skipFailedRequests: true,
   message: "You are creating too many accounts. Please, try again in an hour",
+});
+
+// successful signup ratelimit long term
+const longTermSignupSuccessLimiter = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000, // 1 day
+  max: 4,
+  skipFailedRequests: true,
+  message: "You are creating too many accounts. Please, try again in 24 hours",
 });
 
 // sql ratelimit
@@ -315,7 +323,7 @@ app.get("/500_error", hbs_render);
 // log user out on login page
 app.get("/login", auth.logout, hbs_render);
 
-app.post("/login", loginLimiter, login.loginRequest);
+app.post("/login", loginLimiter, longTermLoginLimiter, login.loginRequest);
 
 app.get("/isAuthenticated", requests.isAuthenticated)
 
@@ -323,7 +331,7 @@ app.get("/isAuthenticated", requests.isAuthenticated)
 app.get("/logout", setLogoutAnyway, auth.logout, hbs_render);
 
 // signup request
-app.post("/signUp", signupFailLimiter, signupSuccessLimiter, signup.signUp);
+app.post("/signUp", signupFailLimiter, signupSuccessLimiter, longTermSignupSuccessLimiter, signup.signUp);
 
 app.get("/sign_up", hbs_render);
 

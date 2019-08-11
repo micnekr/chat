@@ -30,32 +30,46 @@ module.exports = function(utils) {
 
         // else, add a request
 
-        //begin transaction
-        utils.pool.query("BEGIN;", [], function(err) {
-          if (err) return next(err);
+        // create a new session
+        utils.sql.pool.connect(function(err, client, done) {
+          disconnectOnError(err);
 
-          // add request to db
-          let query = `INSERT INTO chat_admission_requests (chat_id, user_id)
+          // a utility to automatically log and disconnect on error
+          function disconnectOnError(err) {
+            if (err) {
+              // disconnect the client
+              done();
+              return next(err);
+            }
+          }
+
+          //begin transaction
+          client.query("BEGIN;", [], function(err) {
+            disconnectOnError(err);
+
+            // add request to db
+            let query = `INSERT INTO chat_admission_requests (chat_id, user_id)
           VALUES ( $1, $2 );`;
-          utils.pool.query(query, [chatId, userId], function(err, done) {
-            if (err) return next(err);
+            client.query(query, [chatId, userId], function(err, done) {
+              disconnectOnError(err);
 
-            // increase number of requests
-            let query = `UPDATE chats
+              // increase number of requests
+              let query = `UPDATE chats
             SET admission_requests_count = admission_requests_count + 1
             WHERE id = $1;`
 
-            utils.pool.query(query, [chatId], function(err) {
-              if (err) return next(err);
+              client.query(query, [chatId], function(err) {
+                disconnectOnError(err);
 
-              // end transaction
-              utils.pool.query("COMMIT", [], function(err) {
-                if (err) return next(err);
-                return res.status(200).end();
+                // end transaction
+                client.query("COMMIT", [], function(err) {
+                  disconnectOnError(err)
+                  done();
+                  return res.status(200).end();
+                })
               })
             })
           })
-
         })
       })
     })
