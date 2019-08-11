@@ -13,12 +13,19 @@ module.exports = function(utils) {
 
     // handle CSRF token errors here
     utils.logger.warn("Bad csrf token from " + req.url);
+
+    // if ajax
+    if (req.xhr) {
+      res.statusMessage = "Bad csrf token";
+      return res.status(403).end(res.statusMessage);
+    }
     res.redirect("/login");
   }
 
   // logs express errors
   function logErrors(err, req, res, next) {
-    utils.logger.error(err);
+    utils.logger.error(err.stack);
+    console.log(err);
     next(err)
   }
 

@@ -12,11 +12,16 @@ module.exports = function(utils) {
     })
   }
 
-  module.getNumberOfChatUsers = function(req, res, next) {
-    utils.sql.getChatUsersNumber(req.query.chatId, function(err, rows) {
+  module.getNumberOfChatUsersAndChatAdmissionType = function(req, res, next) {
+    let query = `SELECT num_of_users, admission_type_id
+      FROM chats
+      WHERE id=$1`
+    utils.sql.get(query, [req.query.chatId], function(err, data) {
       if (err) {
         return next(err);
       }
+
+      let rows = data.rows;
 
       if (!rows[0]) {
         return next(new Error("Chat with id" + creq.query.chatId + " not found"))
@@ -24,6 +29,7 @@ module.exports = function(utils) {
 
       if (!req.hbs_options) req.hbs_options = {};
       req.chatUsersNum = req.hbs_options.chatUsersNum = rows[0].num_of_users;
+      req.admissionTypeId = req.hbs_options.admissionTypeId = rows[0].admission_type_id;
       next();
     })
   }

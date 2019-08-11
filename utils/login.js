@@ -83,7 +83,8 @@ module.exports = function(utils, maxAge, publicChatId) {
     passport.authenticate('local', (err, user, info) => {
       // if an internal error, log it.
       if (err) {
-        logger.error(err);
+        logger.error(err.stack);
+        console.log(err);
         res.statusMessage = internalError.errorMessage
         return res.status(500).send(internalError.errorMessage);
       }

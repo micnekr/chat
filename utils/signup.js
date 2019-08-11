@@ -19,28 +19,40 @@ module.exports = function(utils, saltRounds, publicChatId, joinPublicChat) {
         return next(err);
       }
 
-      // add username, hash and password in the table
-      sql.pool.query("INSERT INTO users (username, password_hash, email) VALUES ($1, $2, $3) RETURNING *;", [req.body.username, hash, req.body.email], function(err, rows) {
-        // error handler
+      // reserve a client
+      // do not forget to call done even in case of error
+      utils.sql.pool.connect(function(err, client, done) {
         if (err) {
-          res.statusMessage = internalError;
+          done()
           return next(err);
         }
 
-        // if need to add public chat
-        if (joinPublicChat) {
-          // add to chat and end the request
-          sql.addUserToChatIfNotAlready(rows.rows[0].id, publicChatId, (err) => {
-            if (err) {
-              res.statusMessage = internalError;
-              return next(err);
-            }
+        // add username, hash and password in the table
+        client.query("INSERT INTO users (username, password_hash, email) VALUES ($1, $2, $3) RETURNING *;", [req.body.username, hash, req.body.email], function(err, rows) {
+          if (err) {
+            res.statusMessage = internalError;
+            done();
+            return next(err);
+          }
+
+          // if need to add public chat
+          if (joinPublicChat) {
+            // add to chat and end the request
+            sql.addUserToChatIfNotAlready(rows.rows[0].id, publicChatId, client, done, (err) => {
+              if (err) {
+                // sql.addUser... adds done() automatically in case of error
+                res.statusMessage = internalError;
+                return next(err);
+              }
+              done();
+              res.end();
+            });
+            // else, just end the request
+          } else {
+            done();
             res.end();
-          });
-          // else, just end the request
-        } else {
-          res.end();
-        }
+          }
+        });
       });
     });
   }

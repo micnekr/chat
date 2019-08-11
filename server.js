@@ -24,6 +24,7 @@ const isBehindProxy = true;
 // setImmediate
 
 // port for postgresql is 5432
+// my sql 3306
 
 // DROP DATABASE  data;
 // CREATE DATABASE data WITH TEMPLATE postgres OWNER serverquerymanager; -- to create a copy
@@ -91,12 +92,12 @@ const isBehindProxy = true;
 // TODO: change menu to post and check for errors
 // TODO: change url function to remove "/"
 // TODO: unify res.statusMessage or res.send
+// TODO: optimise pages with hbs
+// TODO: review user and chat data if has permission usages
 
 // !!!!!!!!!!!!!!!IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!
-// TODO: signup search for names
-// TODO: long term login ratelimit
-// TODO: optimise pages with hbs
-
+// TODO: sort chats on chatslist
+// TODO: refactor
 
 
 
@@ -139,6 +140,11 @@ const pool = new Pool({
   port: 5432,
 })
 
+// throw an error with idle clients
+pool.on('error', (err, client) => {
+  console.error('Unexpected error on idle client', err)
+})
+
 // user modules
 let utils = {
   passport: passport,
@@ -171,12 +177,7 @@ const expressCustomMiddleware = require('./utils/expressCustomMiddleware')(utils
 //setup server
 
 // set http/https options
-let configureServer
-if (isBehindProxy) {
-  configureServer = require('./utils/listenHTTP');
-} else {
-  configureServer = require('./utils/listenHTTPS');
-}
+let configureServer = require('./utils/listenHTTP');
 let server = configureServer(utils, port, app);
 module.exports = server;
 
@@ -231,20 +232,36 @@ const loginLimiter = rateLimit({
   skipSuccessfulRequests: true
 });
 
+// long-term signup limit
+const longTermLoginLimiter = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000, // 1 day
+  max: 20,
+  message: "Too many attempts to log in. Please, try again in 24 hours.",
+  skipSuccessfulRequests: true
+});
+
 // unsuccessful signup ratelimit
 const signupFailLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 15 * 60 * 1000, // 1 hour
   max: 10,
   skipSuccessfulRequests: true,
   message: "Too many attempts to sign up. Please, try again in 15 minutes.",
 });
 
-// unsuccessful signup ratelimit
+// successful signup ratelimit
 const signupSuccessLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 15 minutes
+  windowMs: 60 * 60 * 1000, // 1 hour
   max: 2,
   skipFailedRequests: true,
   message: "You are creating too many accounts. Please, try again in an hour",
+});
+
+// successful signup ratelimit long term
+const longTermSignupSuccessLimiter = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000, // 1 day
+  max: 4,
+  skipFailedRequests: true,
+  message: "You are creating too many accounts. Please, try again in 24 hours",
 });
 
 // sql ratelimit
@@ -306,7 +323,7 @@ app.get("/500_error", hbs_render);
 // log user out on login page
 app.get("/login", auth.logout, hbs_render);
 
-app.post("/login", loginLimiter, login.loginRequest);
+app.post("/login", loginLimiter, longTermLoginLimiter, login.loginRequest);
 
 app.get("/isAuthenticated", requests.isAuthenticated)
 
@@ -314,7 +331,7 @@ app.get("/isAuthenticated", requests.isAuthenticated)
 app.get("/logout", setLogoutAnyway, auth.logout, hbs_render);
 
 // signup request
-app.post("/signUp", signupFailLimiter, signupSuccessLimiter, signup.signUp);
+app.post("/signUp", signupFailLimiter, signupSuccessLimiter, longTermSignupSuccessLimiter, signup.signUp);
 
 app.get("/sign_up", hbs_render);
 
@@ -330,8 +347,11 @@ app.get("/chat", csrfProtection, hbs_render);
 
 app.get("/chats_list", hbs_render);
 
+// get number of notifications for the menu
+app.get("/getNotificationsNum", requests.getNotificationsNum);
+
 // get list of user chats
-app.post("/allChats", requests.getChatsList);
+app.get("/allChats", requests.getChatsList);
 
 // creating a chat
 app.get("/chat_created", hbs_render);
@@ -341,14 +361,27 @@ app.get("/create_chat", csrfProtection, hbs_render);
 app.post("/createChat", createChatLimiter, csrfProtection, requests.addChatRequest);
 
 // joining the chat
-app.get("/chat_information", expressCustomMiddleware.isUserInChat, expressCustomMiddleware.getNumberOfChatUsers, csrfProtection, hbs_render);
+app.get("/chat_information", expressCustomMiddleware.isUserInChat, expressCustomMiddleware.getNumberOfChatUsersAndChatAdmissionType, csrfProtection, hbs_render);
 
-app.post("/joinChat", csrfProtection, requests.joinChatRequest)
+app.post("/joinChat", csrfProtection, requests.joinChat)
+
+app.post("/requestAdmission", csrfProtection, requests.requestAdmission);
 
 // searching for a chat
 app.get("/chatSearch", searchForChatsLimiter, requests.searchForChats);
 
 app.get("/search_for_chats", hbs_render);
+
+// manage your chats
+app.get("/manage_chats", hbs_render);
+
+app.get("/getAdminChatsListAndNotifications", requests.getAdminChatsListAndNotifications);
+
+app.get("/chat_settings", csrfProtection, hbs_render);
+
+app.get("/getListOfAdmissionsRequests", requests.getListOfAdmissionsRequests);
+
+app.post("/acceptOrRejectAdmissionRequest", csrfProtection, requests.acceptOrRejectAdmissionRequest);
 
 // if request not found, show 404 error page
 app.all("*", function(req, res, next) {
@@ -416,7 +449,8 @@ function hbs_render(req, res) {
     csrfToken: csrfToken,
     jquerySource: jquerySource,
     isUserInChat: options.isUserInChat,
-    chatUsersNum: options.chatUsersNum
+    chatUsersNum: options.chatUsersNum,
+    admissionByRequest: options.admissionTypeId === 1
   });
 }
 

@@ -1,4 +1,4 @@
-let $header, $extraInfo, $joinChatButton, $goToChatButton, $chatName, $errorMessage;
+let $header, $extraInfo, $joinChatButton, $goToChatButton, $requestAdmissionButton, $chatName, $errorMessage;
 let chatName, chatId;
 let csrfToken;
 
@@ -14,6 +14,7 @@ $(document).ready(function() {
   $extraInfo = $(".extra-info");
   $joinChatButton = $("#join");
   $goToChatButton = $("#go-to");
+  $requestAdmissionButton = $("#request-admission");
   $errorMessage = $(".errorMessage").hide();
   $chatName = $(".chat-name");
   chatName = getSearchQuery("name");
@@ -24,7 +25,7 @@ $(document).ready(function() {
   // get information about the chat
 
   // num of people in chat
-  let plural = (chatUsersNum !== 1);
+  let plural = (chatUsersNum !== "1");
   let string = plural ? "There are " + chatUsersNum + " people in this chat" : "There is 1 person in this chat";
   $extraInfo.text(string);
 
@@ -41,6 +42,15 @@ $(document).ready(function() {
   // go to chat
   $goToChatButton.click(function() {
     redirect("chat/", `chatId=${chatId}`);
+  })
+
+  $requestAdmissionButton.click(function() {
+    $.post(url("requestAdmission/"), {
+      _csrf: csrfToken,
+      chatId: chatId
+    }, function(reply) {
+      redirect("chats_list/");
+    }).fail(ajaxErrorHandler)
   })
 }) // end ready
 

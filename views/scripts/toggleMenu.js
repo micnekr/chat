@@ -1,16 +1,40 @@
-let $menuContainer, $menuBarsContainer;
+let $menuContainer, $menuIconContainer, $totalNotificationsNum, $manageChatsNotificationsNum, $manageChats;
+let notificationsNum;
 
 const refs = {
-  logout: "logout/"
+  logout: {
+    ref: "logout/",
+    ajax: false
+  },
+  manageChats: {
+    ref: "manage_chats/",
+    ajax: false
+  }
 }
+
+const maxNotificationNum = 99;
+
 
 $(document).ready(function() {
   $menuContainer = $(".menu-container");
-  $menuBarsContainer = $(".menu-bars-container");
+  $menuIconContainer = $(".menu-icon-container");
+  $totalNotificationsNum = $("#totalNotificationsNum");
+  $manageChatsNotificationsNum = $("#manageChatsNotificationsNum");
+  $manageChats = $("#manageChats");
 
+  // show all notifications
+  $.get("/getNotificationsNum", function(data) {
+    notificationsNum = data;
+
+    // show total number of notifications
+    setNotification($totalNotificationsNum, notificationsNum.total);
+    setNotification($manageChatsNotificationsNum, notificationsNum.chatAdmissionRequests);
+  })
+
+  //hide menu
   toggleMenu(0);
 
-  $menuBarsContainer.click(function(evt) {
+  $menuIconContainer.click(function(evt) {
     toggleMenu();
   })
 
@@ -31,7 +55,10 @@ $(document).ready(function() {
   $("#menu-aligner").on("click", "div", function() {
     let $this = $(this);
     let id = $this.attr('id');
-    redirect(refs[id]);
+    let redirectOptions = refs[id]
+    if (!redirectOptions.ajax) {
+      return redirect(redirectOptions.ref);
+    }
   })
 })
 
@@ -48,4 +75,22 @@ function toggleMenu(duration = 500) {
       padding: "swing"
     }
   })
+}
+
+function setNotification($notification, number) {
+  if (number > 0) {
+    // show if there are notifications
+    $notification.show();
+
+    // do not show more than maxNotificationNum notifications
+    if (number > maxNotificationNum) {
+      number = maxNotificationNum;
+    }
+
+    // show
+    $notification.text(number);
+  } else {
+    // hide otherwise
+    return $notification.hide();
+  }
 }
