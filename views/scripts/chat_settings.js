@@ -1,5 +1,9 @@
 let $errorMessage, $admissionsBox;
 
+$.ajaxSetup({
+  cache: false
+});
+
 const chatId = getSearchQuery("chatId");
 
 $(document).ready(function() {
