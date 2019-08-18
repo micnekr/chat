@@ -2,6 +2,10 @@ let autocompleteOptions = {
   limit: 0
 };
 
+$.ajaxSetup({
+  cache: false
+});
+
 let $errorMessage;
 
 $(document).ready(function() {

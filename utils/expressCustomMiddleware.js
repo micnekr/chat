@@ -6,6 +6,7 @@ module.exports = function(utils) {
       if (err) {
         return next(err);
       }
+      // add this option. add options object if needed
       if (!req.hbs_options) req.hbs_options = {};
       req.isUserInChat = req.hbs_options.isUserInChat = isUserInChat;
       next();
@@ -23,10 +24,12 @@ module.exports = function(utils) {
 
       let rows = data.rows;
 
+      // quit if no permission
       if (!rows[0]) {
         return next(new Error("Chat with id" + creq.query.chatId + " not found"))
       }
 
+      // add this options. add options object if needed
       if (!req.hbs_options) req.hbs_options = {};
       req.chatUsersNum = req.hbs_options.chatUsersNum = rows[0].num_of_users;
       req.admissionTypeId = req.hbs_options.admissionTypeId = rows[0].admission_type_id;

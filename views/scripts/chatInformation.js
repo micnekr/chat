@@ -2,6 +2,10 @@ let $header, $extraInfo, $joinChatButton, $goToChatButton, $requestAdmissionButt
 let chatName, chatId;
 let csrfToken;
 
+$.ajaxSetup({
+  cache: false
+});
+
 let ajaxErrorHandler = handle_AJAX_error(showErrorMessage);
 
 $(document).ready(function() {

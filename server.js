@@ -19,7 +19,7 @@ const maxUsernameSymbols = 15;
 const maxEmailSymbols = 254;
 const usernameRegex = /^[a-zA-Z0-9\s_]*$/;
 
-const isBehindProxy = true;
+const isBehindProxy = false;
 
 // setImmediate
 
@@ -98,6 +98,7 @@ const isBehindProxy = true;
 // !!!!!!!!!!!!!!!IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!
 // TODO: sort chats on chatslist
 // TODO: refactor
+// TODO: transactions createChat.js at addChatIfNotExists
 
 
 
@@ -176,7 +177,7 @@ const expressCustomMiddleware = require('./utils/expressCustomMiddleware')(utils
 
 //setup server
 
-// set http/https options
+// set http options
 let configureServer = require('./utils/listenHTTP');
 let server = configureServer(utils, port, app);
 module.exports = server;

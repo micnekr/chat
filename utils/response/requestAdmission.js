@@ -50,7 +50,7 @@ module.exports = function(utils) {
             // add request to db
             let query = `INSERT INTO chat_admission_requests (chat_id, user_id)
           VALUES ( $1, $2 );`;
-            client.query(query, [chatId, userId], function(err, done) {
+            client.query(query, [chatId, userId], function(err) {
               disconnectOnError(err);
 
               // increase number of requests

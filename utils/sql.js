@@ -49,11 +49,6 @@ module.exports = function(utils) {
 
   const addChatIfNotExists = module.addChatIfNotExists = createChat.addChatIfNotExists;
 
-  // multiple queries
-  const pgMultiple = require('./sql/pgMultiple')(utils);
-  const multipleQuery = module.multipleQuery = pgMultiple.query;
-  const Query = module.Query = pgMultiple.Query;
-
 
 
   const get = module.get = require('./sql/get')(utils);

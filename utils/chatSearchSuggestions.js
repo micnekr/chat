@@ -4,6 +4,7 @@ module.exports = function(utils) {
 
   let module = {};
 
+  // how to split words to tokens
   let completeSplit = module.completeSplit = function(str) {
     return "%" + str.replace(/\s/g, '').split("").join("%") + "%";
   }
@@ -13,6 +14,8 @@ module.exports = function(utils) {
   }
 
   let suggestChats = module.suggestChats = function(userInput, transformationMethod, done) {
+
+    // tokenize
     userInput = transformationMethod(userInput);
     let query = `SELECT name, num_of_users, id
     FROM chats

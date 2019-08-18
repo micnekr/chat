@@ -1,5 +1,9 @@
 let $errorMessage;
 
+$.ajaxSetup({
+  cache: false
+});
+
 const maxNotificationNum = 99;
 
 $(document).ready(function() {
