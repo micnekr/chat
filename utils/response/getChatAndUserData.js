@@ -37,6 +37,7 @@ module.exports = function(utils) {
 
         data = data.rows;
 
+        // decrypt all messages
         for (let message of data) {
           message.content = utils.messageEncrypt.decrypt(message.content)
         }

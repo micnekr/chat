@@ -1,8 +1,14 @@
 module.exports = function(utils, maxChars) {
+
+  let module = {};
+
   // adds incoming message to database and constructs message to be sent to other people in chat
+  // (err, if had permission)
   return function(msg, req, done) {
+    // chat id set by user
     let chatId = msg.chatId
-    // get chat id
+
+    // check permission to send messages
     utils.sql.isUserInChat(req.session.passport.user.id, chatId, (err, permission) => {
 
       // if an error, return error
@@ -16,6 +22,11 @@ module.exports = function(utils, maxChars) {
         return done(undefined, false);
       }
 
+      // if the message is empty or not a string, return and do not send it
+      if (!msg.content || typeof msg.content !== 'string') {
+        return done(undefined, undefined);
+      }
+
       // get needed constants
       const user = msg.user;
       const time = Date.parse(new Date()) / 1000;
@@ -24,12 +35,6 @@ module.exports = function(utils, maxChars) {
         return done(undefined, undefined);
       }
       let content = utils.xss(msg.content);
-      const userId = user.id;
-
-      // if the message is empty, return and do not send it
-      if (!content) {
-        return done(undefined, undefined);
-      }
 
       // construct object of response
       let obj = {
@@ -41,7 +46,7 @@ module.exports = function(utils, maxChars) {
       content = utils.messageEncrypt.encrypt(content);
 
       // add message to database
-      utils.sql.pool.query("INSERT INTO messages (chat_id, user_id, time, content) VALUES ($1, $2, $3, $4);", [chatId, userId, time, content], (err) => {
+      utils.sql.pool.query("INSERT INTO messages (chat_id, user_id, time, content) VALUES ($1, $2, $3, $4);", [chatId, user.id, time, content], (err) => {
         //internal error
         if (err) {
           return done(err, null);

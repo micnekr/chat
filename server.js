@@ -98,6 +98,7 @@ const isBehindProxy = false;
 // !!!!!!!!!!!!!!!IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!
 // TODO: sort chats on chatslist
 // TODO: refactor
+// TODO: transactions createChat.js at addChatIfNotExists
 
 
 
@@ -176,7 +177,7 @@ const expressCustomMiddleware = require('./utils/expressCustomMiddleware')(utils
 
 //setup server
 
-// set http/https options
+// set http options
 let configureServer = require('./utils/listenHTTP');
 let server = configureServer(utils, port, app);
 module.exports = server;
