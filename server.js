@@ -19,7 +19,7 @@ const maxUsernameSymbols = 15;
 const maxEmailSymbols = 254;
 const usernameRegex = /^[a-zA-Z0-9\s_]*$/;
 
-const isBehindProxy = false;
+const isBehindProxy = true;
 
 // setImmediate
 
