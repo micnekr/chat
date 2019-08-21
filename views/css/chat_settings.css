@@ -61,9 +61,15 @@ html {}
 }
 
 .admission-entry > button{
-  font-size: 14px;
-  width: 48%;
+  width: 100%;
   margin: 1%;
+}
+
+@media only screen and (min-width: 768px) {
+  /* For desktop: */
+  .admission-entry > button{
+    width: 48%;
+  }
 }
 
 button.accept-button{
