@@ -107,6 +107,7 @@ const isBehindProxy = true;
 // TODO: clear logs
 // TODO: clear db
 // TODO: clear node_modules
+// TODO: set proxy setting
 // TODO: set constants
 
 
