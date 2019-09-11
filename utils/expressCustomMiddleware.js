@@ -1,3 +1,5 @@
+const request = require('request');
+
 module.exports = function(utils) {
   let module = {};
 
@@ -11,6 +13,36 @@ module.exports = function(utils) {
       req.isUserInChat = req.hbs_options.isUserInChat = isUserInChat;
       next();
     })
+  }
+
+  module.verifyCaptcha = function(req, res, next) {
+    if (!req.body.captchaToken) {
+      res.statusMessage = "Something went wrong with captcha";
+      return res.status(400).send(res.statusMessage);
+    }
+
+    const secretKey = "6LffILcUAAAAAPXV4QnNAjlY2-mcSpAXtN0htn5I";
+
+    // query string
+    const verificationURL = "https://www.google.com/recaptcha/api/siteverify?secret=" +
+      secretKey + "&response=" + req.body.captchaToken + "&remoteip=" + req.ip;
+
+    request(verificationURL, function(err, response, body) {
+      if (err) return next(err);
+      body = JSON.parse(body);
+
+      if (body["error-codes"]) {
+        res.statusMessage = "Something went wrong with captcha";
+        return res.status(400).send(res.statusMessage);
+      }
+
+      if (!body.success) {
+        utils.logger.warn("A bot trying to solve captcha");
+        res.statusMessage = "You appear to be a bot. Please, try signing up later.";
+        return res.status(400).send(res.statusMessage);
+      }
+      next();
+    });
   }
 
   module.getNumberOfChatUsersAndChatAdmissionType = function(req, res, next) {

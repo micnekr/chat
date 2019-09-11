@@ -42,6 +42,10 @@ div.passwordWarning{
   width: 80%;
 }
 
+div.g-recaptcha > div{
+  margin: auto;
+}
+
 .separate-box{
   text-align: center;
   padding: 20px 20px;

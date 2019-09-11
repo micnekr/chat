@@ -26,5 +26,7 @@ module.exports = function(utils) {
 
   module.acceptOrRejectAdmissionRequest = require("./response/acceptOrRejectAdmissionRequest")(utils);
 
+  module.changeEmail = require("./response/changeEmail")(utils);
+
   return module;
 }

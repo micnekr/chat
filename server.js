@@ -17,9 +17,10 @@ const defaultMessagesNum = 100;
 const maxChatNameLength = 40;
 const maxUsernameSymbols = 15;
 const maxEmailSymbols = 254;
+const timeForEmailVerification = 5 * 60; //5 minutes IN SECONDS
 const usernameRegex = /^[a-zA-Z0-9\s_]*$/;
 
-const isBehindProxy = true;
+const isBehindProxy = false;
 
 // setImmediate
 
@@ -43,7 +44,19 @@ const isBehindProxy = true;
 
 
 
+// recaptcha keys
+// public 6LdG_rYUAAAAAN3hAc6t-Vn56avxiDwhQsBf3cAy
+// private 6LdG_rYUAAAAACtXjQiOyx23fXG536vsyeqheMIj
 
+// pub 2 6LfTILcUAAAAALMonAsxjqFFoskywzCt5Ep5WRJY
+// priv 6LfTILcUAAAAAPE69FkGBQcrfdvS3ozIH5yw_b__
+
+
+// dev public 6Lc3_7YUAAAAACZDGjF04-6muXFmKQNgkETZQexc
+// dev private 6Lc3_7YUAAAAAKgJiHT5lweyiX_4BrkCyabD-oeE
+
+// dev pub 2 6LffILcUAAAAAECELiK2VB4rtwoPm5kvl1VTlnx_
+// dev priv 6LffILcUAAAAAPXV4QnNAjlY2-mcSpAXtN0htn5I
 
 
 
@@ -61,7 +74,6 @@ const isBehindProxy = true;
 // what I can't do now
 // TODO: email the confirmation link
 // TODO: check email address
-// TODO: captcha on signup
 // TODO: prevent user population on signip and password reset - see previous point
 
 // maybe later
@@ -94,12 +106,12 @@ const isBehindProxy = true;
 // TODO: unify res.statusMessage or res.send
 // TODO: optimise pages with hbs
 // TODO: review user and chat data if has permission usages
+// TODO: rename .js and .css files to use _
 
 // !!!!!!!!!!!!!!!IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!
-// TODO: sort chats on chatslist
 // TODO: refactor
-// TODO: transactions createChat.js at addChatIfNotExists
-
+// TODO: throttle
+// TODO: change host name in email
 
 
 
@@ -109,6 +121,7 @@ const isBehindProxy = true;
 // TODO: clear node_modules
 // TODO: set proxy setting
 // TODO: set constants
+// TODO: change captcha keys: signup client and expressCustomMiddleware
 
 
 
@@ -124,7 +137,6 @@ const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
 const LocalStrategy = require('passport-local').Strategy;
 const Pool = require('pg').Pool;
-const nodemailer = require("nodemailer");
 const rateLimit = require("express-rate-limit");
 const fs = require('fs');
 const helmet = require('helmet');
@@ -158,6 +170,7 @@ let utils = {
   usernameRegex: usernameRegex,
   maxChatNameLength: maxChatNameLength,
   maxUsernameSymbols: maxUsernameSymbols,
+  timeForEmailVerification: timeForEmailVerification,
   maxEmailSymbols: maxEmailSymbols,
   hbs_render: hbs_render
 };
@@ -174,6 +187,7 @@ const signup = utils.signup = require('./utils/signup')(utils, saltRounds, publi
 const chatSearchSuggestions = utils.chatSearchSuggestions = require('./utils/chatSearchSuggestions')(utils);
 const messageEncrypt = utils.messageEncrypt = require('./utils/messageEncrypt')();
 const express_error_handlers = utils.express_error_handlers = require('./utils/express_error_handlers')(utils);
+const verificationEmail = utils.verificationEmail = require('./utils/verificationEmail')(utils);
 const expressCustomMiddleware = require('./utils/expressCustomMiddleware')(utils);
 
 //setup server
@@ -266,7 +280,7 @@ const longTermSignupSuccessLimiter = rateLimit({
   message: "You are creating too many accounts. Please, try again in 24 hours",
 });
 
-// sql ratelimit
+// chat join ratelimit
 const createChatLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 2,
@@ -275,7 +289,7 @@ const createChatLimiter = rateLimit({
   keyGenerator: passportKeyGeneratorForRateLimiter
 });
 
-// sql ratelimit
+// chat join ratelimit
 const searchForChatsLimiter = rateLimit({
   windowMs: 5 * 60 * 1000, // 5 minutes
   max: 50,
@@ -295,7 +309,8 @@ passport.serializeUser(function(user, done) {
   done(null, {
     username: user.username,
     email: user.email,
-    id: user.id
+    id: user.id,
+    verified: user.verified
   });
 });
 passport.deserializeUser(function(user, done) {
@@ -333,14 +348,21 @@ app.get("/isAuthenticated", requests.isAuthenticated)
 app.get("/logout", setLogoutAnyway, auth.logout, hbs_render);
 
 // signup request
-app.post("/signUp", signupFailLimiter, signupSuccessLimiter, longTermSignupSuccessLimiter, signup.signUp);
+app.post("/signUp", signupFailLimiter, signupSuccessLimiter, longTermSignupSuccessLimiter, expressCustomMiddleware.verifyCaptcha, signup.signUp);
 
 app.get("/sign_up", hbs_render);
 
-app.get("/sign_up_success", hbs_render);
+app.get("/email_confirmation_link_sent", verificationEmail.sendEmail, hbs_render);
+app.get("/email_confirmation_link", verificationEmail.verifyEmail, hbs_render);
 
 //protected pages
 app.use(auth.isAuthenticated);
+
+app.get("/change_email", csrfProtection, hbs_render);
+
+app.post("/change_email", csrfProtection, requests.changeEmail)
+
+app.use(redirectNotVerifiedUsers);
 
 // sends chat data
 app.get("/loadChatAndMessagingInfo", requests.getChatAndUserData);
@@ -452,6 +474,7 @@ function hbs_render(req, res) {
     jquerySource: jquerySource,
     isUserInChat: options.isUserInChat,
     chatUsersNum: options.chatUsersNum,
+    isCorrectToken: options.isCorrectToken,
     admissionByRequest: options.admissionTypeId === 1
   });
 }
@@ -472,4 +495,26 @@ function create_error_500() {
 function create_error_402(req, res) {
   res.statusMessage = "test error for 402 custom message";
   res.status(402).end();
+}
+
+// function to set cookies
+function setCookie(header, value, res) {
+
+  // a bug does not let even set maxAge to undefined
+  let options = {};
+  if (maxAge) {
+    options.maxAge = maxAge;
+  }
+  return res.cookie(header, value, options);
+}
+
+function redirectNotVerifiedUsers(req, res, next) {
+  if (!req.session.passport.user.verified) {
+    setCookie("email", req.session.passport.user.email, res);
+
+    // the user is not verified yet
+
+    return res.redirect("/change_email");
+  }
+  next();
 }

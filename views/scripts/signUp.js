@@ -90,14 +90,24 @@ $(document).ready(function() {
       return;
     }
 
+    let token = grecaptcha.getResponse();
+
+    if (!token) {
+      return showErrorMessage("Please, click the checkbox");
+    }
+
     // post
     $.post(url("signUp"), {
       username: $username.val(),
       password: $password.val(),
-      email: $email.val()
+      email: $email.val(),
+      captchaToken: token
     }, function(data) {
-      redirect("sign_up_success");
-    }).fail(handle_AJAX_error(showErrorMessage));
+      redirect("/login");
+    }).fail(function(xhr) {
+      grecaptcha.reset();
+      handle_AJAX_error(showErrorMessage)(xhr);
+    });
 
     return false;
   })

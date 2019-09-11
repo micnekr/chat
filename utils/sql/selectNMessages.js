@@ -1,7 +1,7 @@
 module.exports = function(utils) {
   return function selectNMessages(chatId, N, done) {
 
-    let query = `SELECT time, content, username
+    let query = `SELECT time, content, username, verified
              FROM messages
              LEFT JOIN users
              ON messages.user_id=users.id

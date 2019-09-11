@@ -29,6 +29,10 @@ module.exports = function(utils) {
   // if the user is in the chat
   let isUserInChat = module.isUserInChat = booleanQueries.isUserInChat;
 
+  let isEmailUsed = module.isEmailUsed = booleanQueries.isEmailUsed;
+
+  let isEmailUsedByOtherUsers = module.isEmailUsedByOtherUsers = booleanQueries.isEmailUsedByOtherUsers;
+
 
 
 
