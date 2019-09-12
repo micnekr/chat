@@ -20,7 +20,7 @@ const maxEmailSymbols = 254;
 const timeForEmailVerification = 5 * 60; //5 minutes IN SECONDS
 const usernameRegex = /^[a-zA-Z0-9\s_]*$/;
 
-const isBehindProxy = false;
+const isBehindProxy = true;
 
 // setImmediate
 
@@ -56,7 +56,7 @@ const isBehindProxy = false;
 // dev private 6Lc3_7YUAAAAAKgJiHT5lweyiX_4BrkCyabD-oeE
 
 // dev pub 2 6LffILcUAAAAAECELiK2VB4rtwoPm5kvl1VTlnx_
-// dev priv 6LffILcUAAAAAPXV4QnNAjlY2-mcSpAXtN0htn5I
+// dev priv 2 6LffILcUAAAAAPXV4QnNAjlY2-mcSpAXtN0htn5I
 
 
 
@@ -77,6 +77,7 @@ const isBehindProxy = false;
 // TODO: prevent user population on signip and password reset - see previous point
 
 // maybe later
+// TODO: possibly switch to captcha 3
 // TODO: login rememberMe redirect check on server
 // TODO: cluster and solve memory problems
 // TODO: tests
@@ -110,7 +111,6 @@ const isBehindProxy = false;
 
 // !!!!!!!!!!!!!!!IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!
 // TODO: refactor
-// TODO: throttle
 // TODO: change host name in email
 
 
@@ -121,7 +121,6 @@ const isBehindProxy = false;
 // TODO: clear node_modules
 // TODO: set proxy setting
 // TODO: set constants
-// TODO: change captcha keys: signup client and expressCustomMiddleware
 
 
 
@@ -172,6 +171,7 @@ let utils = {
   maxUsernameSymbols: maxUsernameSymbols,
   timeForEmailVerification: timeForEmailVerification,
   maxEmailSymbols: maxEmailSymbols,
+  hostBase: isBehindProxy ? "https://https://chat.ibdc.ru" : "http://localhost:8124",
   hbs_render: hbs_render
 };
 
@@ -267,7 +267,7 @@ const signupFailLimiter = rateLimit({
 // successful signup ratelimit
 const signupSuccessLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 2,
+  max: 1,
   skipFailedRequests: true,
   message: "You are creating too many accounts. Please, try again in an hour",
 });
@@ -275,7 +275,7 @@ const signupSuccessLimiter = rateLimit({
 // successful signup ratelimit long term
 const longTermSignupSuccessLimiter = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 1 day
-  max: 4,
+  max: 2,
   skipFailedRequests: true,
   message: "You are creating too many accounts. Please, try again in 24 hours",
 });
@@ -289,12 +289,34 @@ const createChatLimiter = rateLimit({
   keyGenerator: passportKeyGeneratorForRateLimiter
 });
 
-// chat join ratelimit
+// chat search ratelimit
 const searchForChatsLimiter = rateLimit({
   windowMs: 5 * 60 * 1000, // 5 minutes
   max: 50,
   message: "Too many attempts to search for a chat. Please, try again in 5 minutes.",
   keyGenerator: passportKeyGeneratorForRateLimiter
+});
+
+// email change ratelimit
+const emailChangeLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: 2,
+  message: "Too many attempts to change your email. Please, try again in 5 minutes.",
+  keyGenerator: passportKeyGeneratorForRateLimiter,
+});
+
+// email send ratelimit long term
+const longTermSendVerificationEmailLimiter = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000, // 1 day
+  max: 4,
+  handler: rateLimitEmailsSentHandler
+});
+
+// email varify ratelimit long term
+const longTermVerifyVerificationEmailLimiter = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000, // 1 day
+  max: 4,
+  handler: rateLimitEmailsVerifiedHandler
 });
 
 //setup socket.io
@@ -352,15 +374,15 @@ app.post("/signUp", signupFailLimiter, signupSuccessLimiter, longTermSignupSucce
 
 app.get("/sign_up", hbs_render);
 
-app.get("/email_confirmation_link_sent", verificationEmail.sendEmail, hbs_render);
-app.get("/email_confirmation_link", verificationEmail.verifyEmail, hbs_render);
+app.get("/email_confirmation_link_sent", longTermSendVerificationEmailLimiter, verificationEmail.sendEmail, hbs_render);
+app.get("/email_confirmation_link", longTermVerifyVerificationEmailLimiter, verificationEmail.verifyEmail, hbs_render);
 
 //protected pages
 app.use(auth.isAuthenticated);
 
 app.get("/change_email", csrfProtection, hbs_render);
 
-app.post("/change_email", csrfProtection, requests.changeEmail)
+app.post("/change_email", emailChangeLimiter, csrfProtection, requests.changeEmail)
 
 app.use(redirectNotVerifiedUsers);
 
@@ -475,6 +497,9 @@ function hbs_render(req, res) {
     isUserInChat: options.isUserInChat,
     chatUsersNum: options.chatUsersNum,
     isCorrectToken: options.isCorrectToken,
+    timeToProceed: options.timeToProceed,
+    reason: options.reason,
+    isDev: !isBehindProxy,
     admissionByRequest: options.admissionTypeId === 1
   });
 }
@@ -517,4 +542,24 @@ function redirectNotVerifiedUsers(req, res, next) {
     return res.redirect("/change_email");
   }
   next();
+}
+
+function rateLimitEmailsSentHandler(req, res, next) {
+  req.default_hbs_url = "to_much_confirmation_emails";
+
+  // add this option. add options object if needed
+  if (!req.hbs_options) req.hbs_options = {};
+  req.hbs_options.timeToProceed = "24 hours";
+  req.hbs_options.reason = "Too many attempts verify an email.";
+  return hbs_render(req, res, next);
+}
+
+function rateLimitEmailsVerifiedHandler(req, res, next) {
+  req.default_hbs_url = "to_much_confirmation_emails";
+
+  // add this option. add options object if needed
+  if (!req.hbs_options) req.hbs_options = {};
+  req.hbs_options.timeToProceed = "24 hours";
+  req.hbs_options.reason = "Too many attempts verify an email.";
+  return hbs_render(req, res, next);
 }

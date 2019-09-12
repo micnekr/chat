@@ -21,7 +21,7 @@ module.exports = function(utils) {
       return res.status(400).send(res.statusMessage);
     }
 
-    const secretKey = "6LffILcUAAAAAPXV4QnNAjlY2-mcSpAXtN0htn5I";
+    const secretKey = utils.isBehindProxy ? "6LfTILcUAAAAAPE69FkGBQcrfdvS3ozIH5yw_b__" : "6LffILcUAAAAAPXV4QnNAjlY2-mcSpAXtN0htn5I";
 
     // query string
     const verificationURL = "https://www.google.com/recaptcha/api/siteverify?secret=" +

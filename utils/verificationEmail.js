@@ -61,11 +61,12 @@ module.exports = function(utils) {
               "Email": email,
             }],
             "Subject": "Please, verify your email",
-            "TextPart": 'Please, go to "http://localhost:8124/email_confirmation_link?token=' + token + '" (without the quotes)', // TODO: replace url
+            "TextPart": 'Please, go to "' + utils.hostBase + '/email_confirmation_link?token=' + token + '" (without the quotes)', // TODO: replace url
             "HTMLPart": verificationHTML,
             "TemplateLanguage": true,
             "Variables": {
               token: token,
+              site: utils.hostBase
             }
           }]
         })

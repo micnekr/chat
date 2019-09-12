@@ -60,7 +60,11 @@
           <div id="passwordQualityProgressBar"><div class="progressLabelContainer"><div class="progressLabel"></div></div></div>
         </div>
 
+        {{#if isDev}}
         <div class="g-recaptcha" data-sitekey="6LffILcUAAAAAECELiK2VB4rtwoPm5kvl1VTlnx_"></div>
+        {{else}}
+        <div class="g-recaptcha" data-sitekey="6LfTILcUAAAAALMonAsxjqFFoskywzCt5Ep5WRJY"></div>
+        {{/if}}
 
         <button id="submit" type="submit">Sign up</button>
       </form>
