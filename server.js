@@ -20,7 +20,7 @@ const maxEmailSymbols = 254;
 const timeForEmailVerification = 5 * 60; //5 minutes IN SECONDS
 const usernameRegex = /^[a-zA-Z0-9\s_]*$/;
 
-const isBehindProxy = false;
+const isBehindProxy = true;
 
 // setImmediate
 
@@ -171,7 +171,7 @@ let utils = {
   maxUsernameSymbols: maxUsernameSymbols,
   timeForEmailVerification: timeForEmailVerification,
   maxEmailSymbols: maxEmailSymbols,
-  hostBase: isBehindProxy ? "https://https://chat.ibdc.ru" : "http://localhost:8124",
+  hostBase: isBehindProxy ? "https://chat.ibdc.ru" : "http://localhost:8124",
   hbs_render: hbs_render
 };
 
