@@ -14,5 +14,31 @@ module.exports = function(utils, sql) {
     })
   }
 
+  // check if there is a user with the same email
+  module.isEmailUsed = function(email, done) {
+    sql.get("SELECT * FROM users WHERE LOWER(email)=$1", [email.toLowerCase()], function(err, data) {
+      if (err) {
+        return done(err);
+      } else if (data.rows[0] !== undefined) {
+        return done(null, true);
+      } else {
+        return done(null, false);
+      }
+    })
+  }
+
+  // check if there is a user with the same email
+  module.isEmailUsedByOtherUsers = function(email, username, done) {
+    sql.get("SELECT * FROM users WHERE LOWER(email)=$1 AND LOWER(username)!=$2", [email.toLowerCase(), username.toLowerCase()], function(err, data) {
+      if (err) {
+        return done(err);
+      } else if (data.rows[0] !== undefined) {
+        return done(null, true);
+      } else {
+        return done(null, false);
+      }
+    })
+  }
+
   return module;
 }

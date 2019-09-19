@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  {{> private ajaxErrorHandler="true"}}
+
+  <title>Change email</title>
+
+  <link rel="stylesheet" type="text/css" href="/css/change_email.css">
+
+  <script src="/scripts/change_email.js"></script>
+
+</head>
+
+<body>
+  {{> enable_js}}
+  <div class="page_container">
+    <div class="header">
+    </div>
+
+    <div class="infobox">
+      <h3>Check the email address you want to verify</h3>
+      <div class="extra-info">
+        When you are ready, click on the "Verify" button.
+
+        <br/>
+        <br/>
+
+        <div class="errorMessage separate-box"></div>
+
+        <label for="email"><b>Email</b></label>
+        <input id="email" type="email" placeholder="Enter Email" name="email">
+      </div>
+
+      <div class="login-button-container">
+        <button id="verify" type="button" name="varify" class="verify-button">Verify</button>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

@@ -22,6 +22,8 @@ if (rememberMe === "false") {
     function(event) {
       //focus
       if (lastTimeBlur + maxTimeBlur < Date.now() && lastTimeBlur !== null) {
+        // hide the page
+        $(".page_container").hide();
         redirect("login/");
       } else {
         lastTimeBlur = null;

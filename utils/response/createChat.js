@@ -21,26 +21,42 @@ module.exports = function(utils) {
       return res.status(400).end();
     }
 
-    // add a chat
-    utils.sql.addChatIfNotExists(settings.chatName, settings.chatAdmissionTypeId, userId, (err, uniqueName, chatId) => {
+    // create a new session
+    utils.sql.pool.connect(function(err, client, done) {
       if (err) {
-        res.statusMessage = internalErrorMessage;
+        done();
         return next(err);
       }
 
-      // if the chat already existed, return
-      if (!uniqueName) {
-        res.statusMessage = nameExistsMessage;
-        return res.status(400).end();
-      }
+      client.query("BEGIN", [], (err) => {
+        // add a chat
+        utils.sql.addChatIfNotExists(settings.chatName, settings.chatAdmissionTypeId, userId, client, done, (err, uniqueName, chatId) => {
+          if (err) {
+            res.statusMessage = internalErrorMessage;
+            return next(err);
+          }
 
-      //otherwise, add admin to the new chat
-      utils.sql.addUserToChatIfNotAlready(userId, chatId, undefined, undefined, function(err) {
-        if (err) {
-          res.statusMessage = internalErrorMessage;
-          return next(err);
-        }
-        res.end();
+          // if the chat already existed, return
+          if (!uniqueName) {
+            res.statusMessage = nameExistsMessage;
+            return res.status(400).end();
+          }
+
+          //otherwise, add admin to the new chat
+          utils.sql.addUserToChatIfNotAlready(userId, chatId, client, done, function(err) {
+            if (err) {
+              res.statusMessage = internalErrorMessage;
+              return next(err);
+            }
+            client.query("COMMIT", [], (err) => {
+              if (err) {
+                done();
+                return next(err);
+              }
+              res.end();
+            })
+          })
+        })
       })
     })
   }

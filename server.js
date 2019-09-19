@@ -17,9 +17,10 @@ const defaultMessagesNum = 100;
 const maxChatNameLength = 40;
 const maxUsernameSymbols = 15;
 const maxEmailSymbols = 254;
+const timeForEmailVerification = 5 * 60; //5 minutes IN SECONDS
 const usernameRegex = /^[a-zA-Z0-9\s_]*$/;
 
-const isBehindProxy = true;
+const isBehindProxy = false;
 
 // setImmediate
 
@@ -43,7 +44,19 @@ const isBehindProxy = true;
 
 
 
+// recaptcha keys
+// public 6LdG_rYUAAAAAN3hAc6t-Vn56avxiDwhQsBf3cAy
+// private 6LdG_rYUAAAAACtXjQiOyx23fXG536vsyeqheMIj
 
+// pub 2 6LfTILcUAAAAALMonAsxjqFFoskywzCt5Ep5WRJY
+// priv 6LfTILcUAAAAAPE69FkGBQcrfdvS3ozIH5yw_b__
+
+
+// dev public 6Lc3_7YUAAAAACZDGjF04-6muXFmKQNgkETZQexc
+// dev private 6Lc3_7YUAAAAAKgJiHT5lweyiX_4BrkCyabD-oeE
+
+// dev pub 2 6LffILcUAAAAAECELiK2VB4rtwoPm5kvl1VTlnx_
+// dev priv 2 6LffILcUAAAAAPXV4QnNAjlY2-mcSpAXtN0htn5I
 
 
 
@@ -61,10 +74,10 @@ const isBehindProxy = true;
 // what I can't do now
 // TODO: email the confirmation link
 // TODO: check email address
-// TODO: captcha on signup
 // TODO: prevent user population on signip and password reset - see previous point
 
 // maybe later
+// TODO: possibly switch to captcha 3
 // TODO: login rememberMe redirect check on server
 // TODO: cluster and solve memory problems
 // TODO: tests
@@ -94,12 +107,11 @@ const isBehindProxy = true;
 // TODO: unify res.statusMessage or res.send
 // TODO: optimise pages with hbs
 // TODO: review user and chat data if has permission usages
+// TODO: rename .js and .css files to use _
 
 // !!!!!!!!!!!!!!!IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!
-// TODO: sort chats on chatslist
 // TODO: refactor
-// TODO: transactions createChat.js at addChatIfNotExists
-
+// TODO: change host name in email
 
 
 
@@ -124,7 +136,6 @@ const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
 const LocalStrategy = require('passport-local').Strategy;
 const Pool = require('pg').Pool;
-const nodemailer = require("nodemailer");
 const rateLimit = require("express-rate-limit");
 const fs = require('fs');
 const helmet = require('helmet');
@@ -158,7 +169,9 @@ let utils = {
   usernameRegex: usernameRegex,
   maxChatNameLength: maxChatNameLength,
   maxUsernameSymbols: maxUsernameSymbols,
+  timeForEmailVerification: timeForEmailVerification,
   maxEmailSymbols: maxEmailSymbols,
+  hostBase: isBehindProxy ? "https://https://chat.ibdc.ru" : "http://localhost:8124",
   hbs_render: hbs_render
 };
 
@@ -174,6 +187,7 @@ const signup = utils.signup = require('./utils/signup')(utils, saltRounds, publi
 const chatSearchSuggestions = utils.chatSearchSuggestions = require('./utils/chatSearchSuggestions')(utils);
 const messageEncrypt = utils.messageEncrypt = require('./utils/messageEncrypt')();
 const express_error_handlers = utils.express_error_handlers = require('./utils/express_error_handlers')(utils);
+const verificationEmail = utils.verificationEmail = require('./utils/verificationEmail')(utils);
 const expressCustomMiddleware = require('./utils/expressCustomMiddleware')(utils);
 
 //setup server
@@ -253,7 +267,7 @@ const signupFailLimiter = rateLimit({
 // successful signup ratelimit
 const signupSuccessLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 2,
+  max: 1,
   skipFailedRequests: true,
   message: "You are creating too many accounts. Please, try again in an hour",
 });
@@ -261,12 +275,12 @@ const signupSuccessLimiter = rateLimit({
 // successful signup ratelimit long term
 const longTermSignupSuccessLimiter = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 1 day
-  max: 4,
+  max: 2,
   skipFailedRequests: true,
   message: "You are creating too many accounts. Please, try again in 24 hours",
 });
 
-// sql ratelimit
+// chat join ratelimit
 const createChatLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 2,
@@ -275,12 +289,34 @@ const createChatLimiter = rateLimit({
   keyGenerator: passportKeyGeneratorForRateLimiter
 });
 
-// sql ratelimit
+// chat search ratelimit
 const searchForChatsLimiter = rateLimit({
   windowMs: 5 * 60 * 1000, // 5 minutes
   max: 50,
   message: "Too many attempts to search for a chat. Please, try again in 5 minutes.",
   keyGenerator: passportKeyGeneratorForRateLimiter
+});
+
+// email change ratelimit
+const emailChangeLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: 2,
+  message: "Too many attempts to change your email. Please, try again in 5 minutes.",
+  keyGenerator: passportKeyGeneratorForRateLimiter,
+});
+
+// email send ratelimit long term
+const longTermSendVerificationEmailLimiter = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000, // 1 day
+  max: 10,
+  handler: rateLimitEmailsSentHandler
+});
+
+// email varify ratelimit long term
+const longTermVerifyVerificationEmailLimiter = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000, // 1 day
+  max: 10,
+  handler: rateLimitEmailsVerifiedHandler
 });
 
 //setup socket.io
@@ -295,7 +331,8 @@ passport.serializeUser(function(user, done) {
   done(null, {
     username: user.username,
     email: user.email,
-    id: user.id
+    id: user.id,
+    verified: user.verified
   });
 });
 passport.deserializeUser(function(user, done) {
@@ -333,14 +370,22 @@ app.get("/isAuthenticated", requests.isAuthenticated)
 app.get("/logout", setLogoutAnyway, auth.logout, hbs_render);
 
 // signup request
-app.post("/signUp", signupFailLimiter, signupSuccessLimiter, longTermSignupSuccessLimiter, signup.signUp);
+app.post("/signUp", signupFailLimiter, signupSuccessLimiter, longTermSignupSuccessLimiter, expressCustomMiddleware.verifyCaptcha, signup.signUp);
 
 app.get("/sign_up", hbs_render);
 
-app.get("/sign_up_success", hbs_render);
+app.get("/email_confirmation_link_sent", longTermSendVerificationEmailLimiter, verificationEmail.sendEmail, hbs_render);
+app.get("/email_confirmation_link", longTermVerifyVerificationEmailLimiter, verificationEmail.verifyEmail, hbs_render);
 
 //protected pages
 app.use(auth.isAuthenticated);
+
+app.get("/change_email", csrfProtection, hbs_render);
+
+// logout so the email is set new in passport storage
+app.post("/change_email", emailChangeLimiter, csrfProtection, requests.changeEmail, setLogoutAnyway, auth.logout)
+
+app.use(redirectNotVerifiedUsers);
 
 // sends chat data
 app.get("/loadChatAndMessagingInfo", requests.getChatAndUserData);
@@ -452,6 +497,10 @@ function hbs_render(req, res) {
     jquerySource: jquerySource,
     isUserInChat: options.isUserInChat,
     chatUsersNum: options.chatUsersNum,
+    isCorrectToken: options.isCorrectToken,
+    timeToProceed: options.timeToProceed,
+    reason: options.reason,
+    isDev: !isBehindProxy,
     admissionByRequest: options.admissionTypeId === 1
   });
 }
@@ -472,4 +521,44 @@ function create_error_500() {
 function create_error_402(req, res) {
   res.statusMessage = "test error for 402 custom message";
   res.status(402).end();
+}
+
+// function to set cookies
+function setCookie(header, value, res) {
+
+  // a bug does not let even set maxAge to undefined
+  let options = {};
+  if (maxAge) {
+    options.maxAge = maxAge;
+  }
+  return res.cookie(header, value, options);
+}
+
+function redirectNotVerifiedUsers(req, res, next) {
+  if (!req.session.passport.user.verified) {
+
+    // the user is not verified yet
+    return res.redirect("/change_email");
+  }
+  next();
+}
+
+function rateLimitEmailsSentHandler(req, res, next) {
+  req.default_hbs_url = "to_much_confirmation_emails";
+
+  // add this option. add options object if needed
+  if (!req.hbs_options) req.hbs_options = {};
+  req.hbs_options.timeToProceed = "24 hours";
+  req.hbs_options.reason = "Too many attempts verify an email.";
+  return hbs_render(req, res, next);
+}
+
+function rateLimitEmailsVerifiedHandler(req, res, next) {
+  req.default_hbs_url = "to_much_confirmation_emails";
+
+  // add this option. add options object if needed
+  if (!req.hbs_options) req.hbs_options = {};
+  req.hbs_options.timeToProceed = "24 hours";
+  req.hbs_options.reason = "Too many attempts verify an email.";
+  return hbs_render(req, res, next);
 }

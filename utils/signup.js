@@ -3,6 +3,8 @@ module.exports = function(utils, saltRounds, publicChatId, joinPublicChat) {
   // internal error message
   const internalError = "Internal error on server. Please, try again later.";
 
+  const validator = require('validator');
+
   let module = {};
 
   const logger = utils.logger;
@@ -45,7 +47,7 @@ module.exports = function(utils, saltRounds, publicChatId, joinPublicChat) {
                 return next(err);
               }
               done();
-              res.end();
+              res.end()
             });
             // else, just end the request
           } else {
@@ -102,7 +104,24 @@ module.exports = function(utils, saltRounds, publicChatId, joinPublicChat) {
         return res.status(400).end();
       }
 
-      addUserToDB(req, res);
+      if (!validator.isEmail(req.body.email)) {
+        res.statusMessage = "The email has invalid format";
+        return res.status(400).end();
+      }
+
+      // check if email exists
+      sql.isEmailUsed(req.body.email, function(err, isEmailUsed) {
+        if (err) {
+          res.statusMessage = internalError;
+          return next(err);
+        }
+
+        if (isEmailUsed) {
+          res.statusMessage = "This email is already used.";
+          return res.status(400).end();
+        }
+        addUserToDB(req, res, next);
+      })
     });
   }
 
