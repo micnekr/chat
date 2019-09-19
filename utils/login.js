@@ -104,6 +104,7 @@ module.exports = function(utils, maxAge, publicChatId) {
         }
         // set cookies of username and current chat
         setCookie("username", req.session.passport.user.username, res);
+        setCookie("email", req.session.passport.user.email, res);
 
         // return success
         return res.end();

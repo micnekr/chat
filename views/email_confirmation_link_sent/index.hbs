@@ -21,13 +21,31 @@
   <script src="/scripts/email_confirmation_link_sent.js"></script>
 
   <script src="/scripts/hide_enable_js_message.js"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+      // go back on button click
+      $(".prev-page-button").click(function() {
+        window.history.back();
+      })
+    })
+  </script>
 </head>
 
 <body>
   {{> enable_js}}
   <div class="page_container">
-    <div class="header">
-    </div>
+      <div class="header">
+        <table class="header-aligner">
+          <tr>
+            <td>{{> backButton}}</td>
+            <td>
+              <h3 class="header-text"></h3>
+            </td>
+            <td></td>
+          </tr>
+        </table>
+      </div>
 
     <div class="infobox">
       <h3>Please, verify your email address</h3>

@@ -20,7 +20,7 @@ const maxEmailSymbols = 254;
 const timeForEmailVerification = 5 * 60; //5 minutes IN SECONDS
 const usernameRegex = /^[a-zA-Z0-9\s_]*$/;
 
-const isBehindProxy = true;
+const isBehindProxy = false;
 
 // setImmediate
 
@@ -308,14 +308,14 @@ const emailChangeLimiter = rateLimit({
 // email send ratelimit long term
 const longTermSendVerificationEmailLimiter = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 1 day
-  max: 4,
+  max: 10,
   handler: rateLimitEmailsSentHandler
 });
 
 // email varify ratelimit long term
 const longTermVerifyVerificationEmailLimiter = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 1 day
-  max: 4,
+  max: 10,
   handler: rateLimitEmailsVerifiedHandler
 });
 
@@ -382,7 +382,8 @@ app.use(auth.isAuthenticated);
 
 app.get("/change_email", csrfProtection, hbs_render);
 
-app.post("/change_email", emailChangeLimiter, csrfProtection, requests.changeEmail)
+// logout so the email is set new in passport storage
+app.post("/change_email", emailChangeLimiter, csrfProtection, requests.changeEmail, setLogoutAnyway, auth.logout)
 
 app.use(redirectNotVerifiedUsers);
 
@@ -535,10 +536,8 @@ function setCookie(header, value, res) {
 
 function redirectNotVerifiedUsers(req, res, next) {
   if (!req.session.passport.user.verified) {
-    setCookie("email", req.session.passport.user.email, res);
 
     // the user is not verified yet
-
     return res.redirect("/change_email");
   }
   next();
