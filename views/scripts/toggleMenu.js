@@ -9,6 +9,10 @@ const refs = {
   manageChats: {
     ref: "manage_chats/",
     ajax: false
+  },
+  changeEmail: {
+    ref: "change_email/",
+    ajax: false
   }
 }
 

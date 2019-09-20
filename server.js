@@ -20,7 +20,7 @@ const maxEmailSymbols = 254;
 const timeForEmailVerification = 5 * 60; //5 minutes IN SECONDS
 const usernameRegex = /^[a-zA-Z0-9\s_]*$/;
 
-const isBehindProxy = true;
+const isBehindProxy = false;
 
 // setImmediate
 
@@ -549,7 +549,7 @@ function rateLimitEmailsSentHandler(req, res, next) {
   // add this option. add options object if needed
   if (!req.hbs_options) req.hbs_options = {};
   req.hbs_options.timeToProceed = "24 hours";
-  req.hbs_options.reason = "Too many attempts verify an email.";
+  req.hbs_options.reason = "Too many attempts to verify an email.";
   return hbs_render(req, res, next);
 }
 
@@ -559,6 +559,6 @@ function rateLimitEmailsVerifiedHandler(req, res, next) {
   // add this option. add options object if needed
   if (!req.hbs_options) req.hbs_options = {};
   req.hbs_options.timeToProceed = "24 hours";
-  req.hbs_options.reason = "Too many attempts verify an email.";
+  req.hbs_options.reason = "Too many attempts to verify an email.";
   return hbs_render(req, res, next);
 }
