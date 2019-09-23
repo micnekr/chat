@@ -42,7 +42,8 @@ module.exports = function(utils) {
 
       var token = buffer.toString('hex');
       let obj = {
-        email: email
+        email: email,
+        time: Date.now()
       };
 
       verificationCodes.set(token, obj, function(err, success) {
@@ -96,6 +97,15 @@ module.exports = function(utils) {
       }
 
       if (value) {
+
+        // if expired
+        //timeForEmailVerification is in seconds
+        if (value.time + utils.timeForEmailVerification * 1000 < Date.now()) {
+          // add this option. add options object if needed
+          if (!req.hbs_options) req.hbs_options = {};
+          req.isCorrectToken = req.hbs_options.isCorrectToken = false;
+          return next();
+        }
 
         // the email is now verified
         verificationCodes.del(token, function(err, count) {

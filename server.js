@@ -72,8 +72,6 @@ const isBehindProxy = false;
 // TODO: mind xss
 
 // what I can't do now
-// TODO: email the confirmation link
-// TODO: check email address
 // TODO: prevent user population on signip and password reset - see previous point
 
 // maybe later
@@ -111,7 +109,10 @@ const isBehindProxy = false;
 
 // !!!!!!!!!!!!!!!IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!
 // TODO: refactor
-// TODO: change host name in email
+// TODO: change password
+// TODO: show people who joined the chat
+// TODO: notifications based on people joining
+// TODO: write tests
 
 
 
@@ -171,7 +172,7 @@ let utils = {
   maxUsernameSymbols: maxUsernameSymbols,
   timeForEmailVerification: timeForEmailVerification,
   maxEmailSymbols: maxEmailSymbols,
-  hostBase: isBehindProxy ? "https://https://chat.ibdc.ru" : "http://localhost:8124",
+  hostBase: isBehindProxy ? "https://chat.ibdc.ru" : "http://localhost:8124",
   hbs_render: hbs_render
 };
 
@@ -377,6 +378,8 @@ app.get("/sign_up", hbs_render);
 app.get("/email_confirmation_link_sent", longTermSendVerificationEmailLimiter, verificationEmail.sendEmail, hbs_render);
 app.get("/email_confirmation_link", longTermVerifyVerificationEmailLimiter, verificationEmail.verifyEmail, hbs_render);
 
+// app.get("/forgot_password", csrfProtection, hbs_render);
+
 //protected pages
 app.use(auth.isAuthenticated);
 
@@ -549,7 +552,7 @@ function rateLimitEmailsSentHandler(req, res, next) {
   // add this option. add options object if needed
   if (!req.hbs_options) req.hbs_options = {};
   req.hbs_options.timeToProceed = "24 hours";
-  req.hbs_options.reason = "Too many attempts verify an email.";
+  req.hbs_options.reason = "Too many attempts to verify an email.";
   return hbs_render(req, res, next);
 }
 
@@ -559,6 +562,6 @@ function rateLimitEmailsVerifiedHandler(req, res, next) {
   // add this option. add options object if needed
   if (!req.hbs_options) req.hbs_options = {};
   req.hbs_options.timeToProceed = "24 hours";
-  req.hbs_options.reason = "Too many attempts verify an email.";
+  req.hbs_options.reason = "Too many attempts to verify an email.";
   return hbs_render(req, res, next);
 }

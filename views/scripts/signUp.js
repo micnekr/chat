@@ -145,6 +145,11 @@ function showFeedbackForPassword() {
     // reset the progress bar and print "Done!"
     $progressLabel.text("Done!");
     $passwordQualityProgressBar.progressbar("value", 0);
+
+    // reset the suggestions
+    showPasswordSuggestingMessage($passwordWarning, "");
+    showPasswordSuggestingMessage($passwordFeedback, "");
+
     return;
 
   } else {
@@ -167,7 +172,7 @@ function showFeedbackForPassword() {
     // empty all
     $passwordQualityProgressBarContainer.fadeOut("slow");
     $passwordSuggestionsLabel.fadeOut("slow");
-    showPasswordSuggestingMessage($passwordWarning);
-    showPasswordSuggestingMessage($passwordFeedback);
+    showPasswordSuggestingMessage($passwordWarning, "");
+    showPasswordSuggestingMessage($passwordFeedback, "");
   }
 }
