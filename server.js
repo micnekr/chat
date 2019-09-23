@@ -72,8 +72,6 @@ const isBehindProxy = false;
 // TODO: mind xss
 
 // what I can't do now
-// TODO: email the confirmation link
-// TODO: check email address
 // TODO: prevent user population on signip and password reset - see previous point
 
 // maybe later
@@ -111,7 +109,10 @@ const isBehindProxy = false;
 
 // !!!!!!!!!!!!!!!IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!
 // TODO: refactor
-// TODO: change host name in email
+// TODO: change password
+// TODO: show people who joined the chat
+// TODO: notifications based on people joining
+// TODO: write tests
 
 
 
@@ -376,6 +377,8 @@ app.get("/sign_up", hbs_render);
 
 app.get("/email_confirmation_link_sent", longTermSendVerificationEmailLimiter, verificationEmail.sendEmail, hbs_render);
 app.get("/email_confirmation_link", longTermVerifyVerificationEmailLimiter, verificationEmail.verifyEmail, hbs_render);
+
+// app.get("/forgot_password", csrfProtection, hbs_render);
 
 //protected pages
 app.use(auth.isAuthenticated);
