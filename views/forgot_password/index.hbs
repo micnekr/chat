@@ -3,41 +3,41 @@
 
 <head>
 
-  {{> private ajaxErrorHandler="true"}}
+    {{> private ajaxErrorHandler="true"}}
 
-  <title>Forgot password</title>
+    <title>Forgot password</title>
 
-  <link rel="stylesheet" type="text/css" href="/css/forgot_password.css">
+    <link rel="stylesheet" type="text/css" href="/css/forgot_password.css">
 
-  <script src="/scripts/forgot_password.js"></script>
+    <script src="/scripts/forgot_password.js"></script>
 
 </head>
 
 <body>
-  {{> enable_js}}
-  <div class="page_container">
+{{> enable_js}}
+<div class="page_container">
     <div class="header">
     </div>
 
     <div class="infobox">
-      <h3>Please, enter your username</h3>
-      <div class="extra-info">
-        When you are ready, click on the "Reset password" button.
+        <h3>Please, enter your username</h3>
+        <div class="extra-info">
+            When you are ready, click on the "Reset password" button.
 
-        <br/>
-        <br/>
+            <br/>
+            <br/>
 
-        <div class="errorMessage separate-box"></div>
+            <div class="errorMessage separate-box"></div>
 
-        <label for="username"><b>Username</b></label>
-        <input id="username" type="text" placeholder="Enter username" name="username">
-      </div>
+            <label for="username"><b>Username</b></label>
+            <input id="username" type="text" placeholder="Enter username" name="username">
+        </div>
 
-      <div class="login-button-container">
-        <button id="reset" type="button" name="reset" class="reset-button">Reset password</button>
-      </div>
+        <div class="Reset-button-container">
+            <button id="reset" type="button" name="reset" class="reset-button">Reset password</button>
+        </div>
     </div>
-  </div>
+</div>
 </body>
 
 </html>

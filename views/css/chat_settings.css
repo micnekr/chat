@@ -1,6 +1,7 @@
-html {}
+html {
+}
 
-  .error-message{
+.error-message {
     text-align: center;
     color: red;
     padding: 20px 20px;
@@ -10,11 +11,11 @@ html {}
     margin: auto;
     margin-top: 20px;
     margin-bottom: 20px;
-  }
+}
 
-  .settings-box {
-    overflow:auto;
-    height:80%;
+.settings-box {
+    overflow: auto;
+    height: 80%;
     width: 80%;
     border: 1px solid;
     border-radius: 5px;
@@ -22,65 +23,65 @@ html {}
     padding: 20px 20px;
     margin: auto;
     margin-top: 20px;
-  }
+}
 
-  h4{
+h4 {
     text-align: center;
     margin: 10px;
-  }
-
-.admissions-box{
-  overflow-y:auto;
-  overflow-x: hidden;
-  max-height:70%;
-  border: 1.5px solid;
-  border-radius: 5px;
-  border-color: #a0a0a0;
-  padding: 20px 20px;
 }
 
-.admission-entry{
-  overflow-wrap: break-word;
-  word-wrap: break-word;
-  border: 1px solid;
-  border-radius: 5px;
-  border-color: #a0a0a0;
-  background-color: white;
-  margin: 5px;
-  padding: 15px 20px;
-  padding-top: 10px;
+.admissions-box {
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: 70%;
+    border: 1.5px solid;
+    border-radius: 5px;
+    border-color: #a0a0a0;
+    padding: 20px 20px;
 }
 
-.admission-entry > p{
-  text-align: center;
-  margin: 5px;
+.admission-entry {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    border: 1px solid;
+    border-radius: 5px;
+    border-color: #a0a0a0;
+    background-color: white;
+    margin: 5px;
+    padding: 15px 20px;
+    padding-top: 10px;
 }
 
-.admission-entry > .id-container{
-  display: none;
+.admission-entry > p {
+    text-align: center;
+    margin: 5px;
 }
 
-.admission-entry > button{
-  width: 100%;
-  margin: 1%;
+.admission-entry > .id-container {
+    display: none;
+}
+
+.admission-entry > button {
+    width: 100%;
+    margin: 1%;
 }
 
 @media only screen and (min-width: 768px) {
-  /* For desktop: */
-  .admission-entry > button{
-    width: 48%;
-  }
+    /* For desktop: */
+    .admission-entry > button {
+        width: 48%;
+    }
 }
 
-button.accept-button{
-  color: white;
+button.accept-button {
+    color: white;
 }
 
-button.reject-button{
-  color: white;
-  background-color: #ff3333;
+button.reject-button {
+    color: white;
+    background-color: #ff3333;
 }
 
-button.reject-button:hover{
-  background-color: #cc3300;
+button.reject-button:hover {
+    background-color: #cc3300;
 }

@@ -3,61 +3,61 @@
 
 <head>
 
-  <!-- Get jquery -->
-  <script src="{{jquerySource}}"></script>
+    <!-- Get jquery -->
+    <script src="{{jquerySource}}"></script>
 
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Email verification</title>
+    <title>Email verification</title>
 
-  <link rel="stylesheet" type="text/css" href="/css/default_style.css">
+    <link rel="stylesheet" type="text/css" href="/css/default_style.css">
 
-  <link rel="stylesheet" type="text/css" href="/css/email_confirmation_link_sent.css">
+    <link rel="stylesheet" type="text/css" href="/css/email_confirmation_link_sent.css">
 
-  <script src="/scripts/url.js"></script>
+    <script src="/scripts/url.js"></script>
 
-  <script src="/scripts/email_confirmation_link_sent.js"></script>
+    <script src="/scripts/email_confirmation_link_sent.js"></script>
 
-  <script src="/scripts/hide_enable_js_message.js"></script>
+    <script src="/scripts/hide_enable_js_message.js"></script>
 
-  <script type="text/javascript">
-    $(document).ready(function () {
-      // go back on button click
-      $(".prev-page-button").click(function() {
-        window.history.back();
-      })
-    })
-  </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // go back on button click
+            $(".prev-page-button").click(function () {
+                window.history.back();
+            })
+        })
+    </script>
 </head>
 
 <body>
-  {{> enable_js}}
-  <div class="page_container">
-      <div class="header">
+{{> enable_js}}
+<div class="page_container">
+    <div class="header">
         <table class="header-aligner">
-          <tr>
-            <td>{{> backButton}}</td>
-            <td>
-              <h3 class="header-text"></h3>
-            </td>
-            <td></td>
-          </tr>
+            <tr>
+                <td>{{> backButton}}</td>
+                <td>
+                    <h3 class="header-text"></h3>
+                </td>
+                <td></td>
+            </tr>
         </table>
-      </div>
+    </div>
 
     <div class="infobox">
-      <h3>Please, verify your email address</h3>
-      <div class="extra-info">
-        Check your email and click on the "Verify" button.
-      </div>
+        <h3>Please, verify your email address</h3>
+        <div class="extra-info">
+            Check your email and click on the "Verify" button.
+        </div>
 
-      <div class="login-button-container">
-        <button id="login" type="button" name="login" class="login-button">Log in</button>
-      </div>
+        <div class="login-button-container">
+            <button id="login" type="button" name="login" class="login-button">Log in</button>
+        </div>
     </div>
-  </div>
+</div>
 </body>
 
 </html>

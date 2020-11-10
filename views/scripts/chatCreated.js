@@ -1,7 +1,7 @@
-$(document).ready(function() {
+$(document).ready(function () {
 
-  $("#chat-list-redirect").click(() => {
-    redirect("chats_list/");
-  })
+    $("#chat-list-redirect").click(() => {
+        redirect("chats_list/");
+    })
 
-}) // end ready
+}); // end ready

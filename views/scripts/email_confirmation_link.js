@@ -1,6 +1,6 @@
-$(document).ready(function() {
+$(document).ready(function () {
 
-  $("#login").click(() => {
-    redirect("login/");
-  })
-}) // end ready
+    $("#login").click(() => {
+        redirect("login/");
+    })
+}); // end ready

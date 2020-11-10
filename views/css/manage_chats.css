@@ -1,6 +1,7 @@
-html {}
+html {
+}
 
-  .error-message{
+.error-message {
     text-align: center;
     color: red;
     padding: 20px 20px;
@@ -10,34 +11,34 @@ html {}
     margin: auto;
     margin-top: 20px;
     margin-bottom: 20px;
-  }
-
-.chats-box{
-  overflow-y:auto;
-  overflow-x: hidden;
-  height:70%;
-  border: 1px solid;
-  border-radius: 5px;
-  border-color: #a0a0a0;
-  padding: 20px 20px;
 }
 
-.chat-ref{
-  position: relative;
-  overflow-wrap: break-word;
-  word-wrap: break-word;
-  border: 1px solid;
-  border-radius: 5px;
-  border-color: #a0a0a0;
-  background-color: white;
-  padding: 20px 20px;
+.chats-box {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 70%;
+    border: 1px solid;
+    border-radius: 5px;
+    border-color: #a0a0a0;
+    padding: 20px 20px;
 }
 
-.chat-ref:hover{
-  background-color: #f0f0f0;
+.chat-ref {
+    position: relative;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    border: 1px solid;
+    border-radius: 5px;
+    border-color: #a0a0a0;
+    background-color: white;
+    padding: 20px 20px;
 }
 
-button.create-chat{
-  width:70%;
-  margin: 20px;
+.chat-ref:hover {
+    background-color: #f0f0f0;
+}
+
+button.create-chat {
+    width: 70%;
+    margin: 20px;
 }

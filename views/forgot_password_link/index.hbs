@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    {{> public}}
+
+    <!-- csrf token -->
+    <meta name="csrf-token" content="{{csrfToken}}">
+
+    <!-- weak password suggestion -->
+    <script type="text/javascript" charset="utf-8" async="" crossorigin="anonymous"
+            src="https://cfl.dropboxstatic.com/static/compiled/js/external/zxcvbn.min-vflKq_aMA.js"></script>
+
+    <!-- jquery ui -->
+    <script
+            src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+            integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+
+    <title>Password reset</title>
+
+    <link rel="stylesheet" type="text/css" href="/css/default_style.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/forgot_password_link.css">
+
+    <script src="/scripts/forgot_password_link.js"></script>
+</head>
+
+<body>
+{{> enable_js}}
+<div class="page_container">
+    <div class="header">
+        <h3>Password reset</h3>
+    </div>
+
+    <div class="errorMessage separate-box"></div>
+
+    <div class="infobox">
+        <div class="extra-info">
+            Please, type in your new password:
+            <br/>
+            <br/>
+            <label for="password"><b>Password</b></label>
+            <input id="password" type="password" placeholder="Enter Password" name="password" required>
+
+            <label for="password2"><b>Repeat Password</b></label>
+            <input id="password2" type="password" placeholder="Repeat Password" name="password2" required>
+
+            <span class="password-suggestions-label"><b>Security advice for your password (based on the first password):</b></span>
+
+            <div class="passwordFeedback separate-box"></div>
+
+            <div class="passwordWarning separate-box"></div>
+
+            <div class="passwordQualityProgressBarContainer">
+                <label for="passwordQualityProgressBar"><b>Minimum password security level to proceed:</b></label>
+                <div id="passwordQualityProgressBar">
+                    <div class="progressLabelContainer">
+                        <div class="progressLabel"></div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="submit" class="submit">Submit</button>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

@@ -1,59 +1,60 @@
-html {}
+html {
+}
 
 /* Full-width inputs */
 input[type=text] {
-  width: 100%;
-  padding: 12px 20px;
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
 }
 
-button[type=submit]{
-  width:100%;
-  margin-top: 20px;
+button[type=submit] {
+    width: 100%;
+    margin-top: 20px;
 }
 
 div.settings-box {
-  overflow:auto;
-  height:80%;
-  width: 60%;
-  border: 1px solid;
-  border-radius: 5px;
-  border-color: #a0a0a0;
-  padding: 20px 20px;
-  margin: auto;
-  margin-top: 20px;
+    overflow: auto;
+    height: 80%;
+    width: 60%;
+    border: 1px solid;
+    border-radius: 5px;
+    border-color: #a0a0a0;
+    padding: 20px 20px;
+    margin: auto;
+    margin-top: 20px;
 }
 
-div.errorMessage{
-  text-align: center;
-  width: 60%;
-  padding: 20px 20px;
-  border: 1px solid;
-  border-radius: 5px;
-  border-color: #a0a0a0;
-  color: red;
-  margin: auto;
-  margin-top: 20px;
+div.errorMessage {
+    text-align: center;
+    width: 60%;
+    padding: 20px 20px;
+    border: 1px solid;
+    border-radius: 5px;
+    border-color: #a0a0a0;
+    color: red;
+    margin: auto;
+    margin-top: 20px;
 }
 
-fieldset{
-  width: 80%;
-  border: 1px solid;
-  border-radius: 5px;
-  border-color: #a0a0a0;
-  padding: 20px 20px;
-  margin: auto;
-  margin-top: 20px;
+fieldset {
+    width: 80%;
+    border: 1px solid;
+    border-radius: 5px;
+    border-color: #a0a0a0;
+    padding: 20px 20px;
+    margin: auto;
+    margin-top: 20px;
 }
 
-legend, h4{
-  text-align: center;
-  margin: 10px;
+legend, h4 {
+    text-align: center;
+    margin: 10px;
 }
 
-.radio-label{
-  width: 40%;
+.radio-label {
+    width: 40%;
 }

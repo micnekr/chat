@@ -3,52 +3,52 @@
 
 <head>
 
-  <!-- Get jquery -->
-  <script src="{{jquerySource}}"></script>
+    <!-- Get jquery -->
+    <script src="{{jquerySource}}"></script>
 
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Email verification</title>
+    <title>Email verification</title>
 
-  <link rel="stylesheet" type="text/css" href="/css/default_style.css">
+    <link rel="stylesheet" type="text/css" href="/css/default_style.css">
 
-  <link rel="stylesheet" type="text/css" href="/css/email_confirmation_link.css">
+    <link rel="stylesheet" type="text/css" href="/css/email_confirmation_link.css">
 
-  <script src="/scripts/url.js"></script>
+    <script src="/scripts/url.js"></script>
 
-  <script src="/scripts/email_confirmation_link.js"></script>
+    <script src="/scripts/email_confirmation_link.js"></script>
 
-  <script src="/scripts/hide_enable_js_message.js"></script>
+    <script src="/scripts/hide_enable_js_message.js"></script>
 </head>
 
 <body>
-  {{> enable_js}}
-  <div class="page_container">
+{{> enable_js}}
+<div class="page_container">
     <div class="header">
     </div>
 
     <div class="infobox">
-      {{#if isCorrectToken}}
-        <h3>Your email address is now verified</h3>
-      {{else}}
-        <h3>Your token seems wrong.</h3>
-      {{/if}}
-      <div class="extra-info">
         {{#if isCorrectToken}}
-          You can go to the login page and try to log in.
+            <h3>Your email address is now verified</h3>
         {{else}}
-          If you copied the token, check if you copied the entire token.
-          <br>The token could expire. In this case, try resending the token. To do this, try to log in.
+            <h3>Your token seems wrong.</h3>
         {{/if}}
-      </div>
+        <div class="extra-info">
+            {{#if isCorrectToken}}
+                You can go to the login page and try to log in.
+            {{else}}
+                If you copied the token, check if you copied the entire token.
+                <br>The token could expire. In this case, try resending the token. To do this, try to log in.
+            {{/if}}
+        </div>
 
-      <div class="login-button-container">
-        <button id="login" type="button" name="login" class="login-button">Log in</button>
-      </div>
+        <div class="login-button-container">
+            <button id="login" type="button" name="login" class="login-button">Log in</button>
+        </div>
     </div>
-  </div>
+</div>
 </body>
 
 </html>

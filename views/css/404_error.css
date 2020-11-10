@@ -1,6 +1,7 @@
-html {}
+html {
+}
 
-button.return-button{
-  width:50%;
-  margin-top: 20px;
+button.return-button {
+    width: 50%;
+    margin-top: 20px;
 }

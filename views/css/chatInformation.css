@@ -1,6 +1,7 @@
-html {}
+html {
+}
 
-  .errorMessage{
+.errorMessage {
     width: 80%;
     text-align: center;
     color: red;
@@ -11,9 +12,9 @@ html {}
     margin: auto;
     margin-top: 20px;
     margin-bottom: 20px;
-  }
+}
 
-button.join-button, button.go-to-button{
-  width:50%;
-  margin-top: 20px;
+button.join-button, button.go-to-button {
+    width: 50%;
+    margin-top: 20px;
 }

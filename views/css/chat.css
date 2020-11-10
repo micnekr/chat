@@ -1,49 +1,50 @@
-html {}
+html {
+}
 
-  .messages-box{
-    overflow-y:auto;
+.messages-box {
+    overflow-y: auto;
     overflow-x: hidden;
-    height:80%;
+    height: 80%;
     border: 1px solid;
     border-radius: 5px;
     border-color: #a0a0a0;
     padding: 20px 20px;
-  }
+}
 
-  .main-messaging{
+.main-messaging {
     height: 80vh;
-    width:70%;
+    width: 70%;
     margin: auto;
     margin-top: 10px;
-  }
+}
 
-  .messages-aligner{
+.messages-aligner {
     width: 100%;
-  }
+}
 
-  textarea.type-message{
+textarea.type-message {
     resize: none;
-    width:100%;
+    width: 100%;
     height: 20%;
     border: 1px groove;
     border-radius: 5px;
-  }
+}
 
-  button.send-button{
-    width:90%;
+button.send-button {
+    width: 90%;
     margin-left: 10px;
-  }
+}
 
-  .send-message{
-    width:100%;
+.send-message {
+    width: 100%;
     margin-top: 10px;
-  }
+}
 
-  .send-message-table > tr{
+.send-message-table > tr {
     width: 50%;
-  }
+}
 
-  .errorMessage{
+.errorMessage {
     width: 100%;
     text-align: center;
     color: red;
@@ -54,9 +55,9 @@ html {}
     margin: auto;
     margin-top: 20px;
     margin-bottom: 20px;
-  }
+}
 
-  div.message{
+div.message {
     overflow-wrap: break-word;
     word-wrap: break-word;
     border: none;
@@ -64,38 +65,38 @@ html {}
     max-width: 200px;
     padding: 5px 10px;
     color: Navy;
-  }
+}
 
-  div.left.message{
+div.left.message {
     background-color: #bf8fd6;
     border-radius: 0px 5px 5px 5px;
     padding-right: 3%;
     padding-left: 3%;
-  }
+}
 
-  div.right.message{
+div.right.message {
     background-color: #00BFFF;
     border-radius: 5px 0px 5px 5px;
-    float:right;
+    float: right;
     padding-right: 3%;
     padding-left: 3%;
-  }
+}
 
-  div.message>sub{
+div.message > sub {
     font-size: 10px;
     color: white;
-    float:right;
-  }
+    float: right;
+}
 
-  div.name{
+div.name {
     width: 100%;
     color: white;
     font-size: 16px;
-  }
+}
 
-  div.character_counter{
+div.character_counter {
     width: 100%;
     color: grey;
     font-size: 16px;
     text-align: center;
-  }
+}

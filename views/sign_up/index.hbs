@@ -3,79 +3,87 @@
 
 <head>
 
-  {{> public ajaxErrorHandler="true"}}
+    {{> public ajaxErrorHandler="true"}}
 
-<!-- weak password suggestion -->
-<script type="text/javascript" charset="utf-8" async="" crossorigin="anonymous" src="https://cfl.dropboxstatic.com/static/compiled/js/external/zxcvbn.min-vflKq_aMA.js"></script>
+    <!-- csrf token -->
+    <meta name="csrf-token" content="{{csrfToken}}">
 
-<!-- captcha -->
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <!-- weak password suggestion -->
+    <script type="text/javascript" charset="utf-8" async="" crossorigin="anonymous"
+            src="https://cfl.dropboxstatic.com/static/compiled/js/external/zxcvbn.min-vflKq_aMA.js"></script>
 
-<!-- jquery ui -->
-<script
-  src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
-  integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
-  crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+    <!-- captcha -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
-  <title>Sign up</title>
+    <!-- jquery ui -->
+    <script
+            src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+            integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
 
-  <link rel="stylesheet" type="text/css" href="/css/signUp.css">
+    <title>Sign up</title>
 
-  <script src="/scripts/signUp.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/signUp.css">
+
+    <script src="/scripts/signUp.js"></script>
 </head>
 
 <body>
-  {{> enable_js}}
-  <div class="page_container">
+{{> enable_js}}
+<div class="page_container">
     <div class="header">
-      <!-- <div class="logo-img"></div> -->
-      <h3>Sign up for your account</h3>
+        <!-- <div class="logo-img"></div> -->
+        <h3>Sign up for your account</h3>
     </div>
 
     <div class="errorMessage separate-box"></div>
 
     <div class="signup-box">
-      <form id="form" action="" method="">
-        <label for="username"><b>Username</b></label>
-        <input id="username" type="text" placeholder="Enter Username" name="username" required>
+        <form id="form" action="" method="">
+            <label for="username"><b>Username</b></label>
+            <input id="username" type="text" placeholder="Enter Username" name="username" required>
 
-        <label for="password"><b>Password</b></label>
-        <input id="password" type="password" placeholder="Enter Password" name="password" required>
+            <label for="password"><b>Password</b></label>
+            <input id="password" type="password" placeholder="Enter Password" name="password" required>
 
-        <label for="password2"><b>Repeat Password</b></label>
-        <input id="password2" type="password" placeholder="Repeat Password" name="password2" required>
+            <label for="password2"><b>Repeat Password</b></label>
+            <input id="password2" type="password" placeholder="Repeat Password" name="password2" required>
 
-        <label for="email"><b>Email</b></label>
-        <input id="email" type="email" placeholder="Enter Email" name="email" required>
+            <label for="email"><b>Email</b></label>
+            <input id="email" type="email" placeholder="Enter Email" name="email" required>
 
-        <span class="password-suggestions-label"><b>Security advice for your password (based on the first password):</b></span>
+            <span class="password-suggestions-label"><b>Security advice for your password (based on the first password):</b></span>
 
-        <div class="passwordFeedback separate-box"></div>
+            <div class="passwordFeedback separate-box"></div>
 
-        <div class="passwordWarning separate-box"></div>
+            <div class="passwordWarning separate-box"></div>
 
-        <div class="passwordQualityProgressBarContainer">
-          <label for="passwordQualityProgressBar"><b>Minimum password security level to proceed:</b></label>
-          <div id="passwordQualityProgressBar"><div class="progressLabelContainer"><div class="progressLabel"></div></div></div>
-        </div>
+            <div class="passwordQualityProgressBarContainer">
+                <label for="passwordQualityProgressBar"><b>Minimum password security level to proceed:</b></label>
+                <div id="passwordQualityProgressBar">
+                    <div class="progressLabelContainer">
+                        <div class="progressLabel"></div>
+                    </div>
+                </div>
+            </div>
 
-        {{#if isDev}}
-        <div class="g-recaptcha" data-sitekey="6LffILcUAAAAAECELiK2VB4rtwoPm5kvl1VTlnx_"></div>
-        {{else}}
-        <div class="g-recaptcha" data-sitekey="6LfTILcUAAAAALMonAsxjqFFoskywzCt5Ep5WRJY"></div>
-        {{/if}}
+            {{#if isDev}}
+                <div class="g-recaptcha" data-sitekey="6LffILcUAAAAAECELiK2VB4rtwoPm5kvl1VTlnx_"></div>
+            {{else}}
+                <div class="g-recaptcha" data-sitekey="6LfTILcUAAAAALMonAsxjqFFoskywzCt5Ep5WRJY"></div>
+            {{/if}}
 
-        <button id="submit" type="submit">Sign up</button>
-      </form>
-
-      <div class="login">
-        <form id="login-form" action="/login" method="get">
-          <button type="submit">Already have an account? Log in</button>
+            <button id="submit" type="submit">Sign up</button>
         </form>
-      </div>
+
+        <div class="login">
+            <form id="login-form" action="/login" method="get">
+                <button type="submit">Already have an account? Log in</button>
+            </form>
+        </div>
     </div>
-  </div>
+</div>
 </body>
 
 </html>

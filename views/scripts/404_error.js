@@ -1,6 +1,6 @@
-$(document).ready(function() {
+$(document).ready(function () {
 
-  $("#return").click(() => {
-    window.history.back();
-  })
-}) // end ready
+    $("#return").click(() => {
+        window.history.back();
+    })
+}); // end ready

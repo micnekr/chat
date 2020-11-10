@@ -3,49 +3,51 @@
 
 <head>
 
-  {{> private ajaxErrorHandler="true"}}
+    {{> private ajaxErrorHandler="true"}}
 
-  <!-- plugins -->
-  <script src="../src/jquery-ui-modified-autocomplete.js"></script>
+    <!-- plugins -->
+    <script src="../src/jquery-ui-modified-autocomplete.js"></script>
 
-  <title>Search for chats</title>
+    <title>Search for chats</title>
 
-  <!-- css -->
+    <!-- css -->
 
-  <link rel="stylesheet" type="text/css" href="../src/jquery-ui-modified-autocomplete.min.css">
-  <link rel="stylesheet" type="text/css" href="/css/searchForChats.css">
+    <link rel="stylesheet" type="text/css" href="../src/jquery-ui-modified-autocomplete.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/searchForChats.css">
 
-  <!-- xss library -->
-  <script src="https://rawgit.com/leizongmin/js-xss/master/dist/xss.js"></script>
+    <!-- xss library -->
+    <script src="https://rawgit.com/leizongmin/js-xss/master/dist/xss.js"></script>
 
-  <script src="/scripts/autocomplete.js"></script>
-  <script src="/scripts/searchForChats.js"></script>
+    <script src="/scripts/autocomplete.js"></script>
+    <script src="/scripts/searchForChats.js"></script>
 </head>
 
 <body>
-  {{> enable_js}}
-  <div class="page_container">
+{{> enable_js}}
+<div class="page_container">
     <div class="header">
-      <table class="header-aligner">
-        <tr>
-          <td>{{> backButton}}</td>
-          <td>
-            <h3 class="header-text" id="users-chats">Search for chats here:</h3>
-          </td>
-          <td></td>
-        </tr>
-      </table>
+        <table class="header-aligner">
+            <tr>
+                <td>{{> backButton}}</td>
+                <td>
+                    <h3 class="header-text" id="users-chats">Search for chats here:</h3>
+                </td>
+                <td></td>
+            </tr>
+        </table>
     </div>
 
     <div class="body-container">
-      <div class="chats-box">
-        <div class="autocomplete-error-message"></div>
-        <div class="global-chat-search-container">
-          <input type="text" name="global-chat-search" id="global-chat-search" class="typeahead" placeholder="Search for new chats" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        <div class="chats-box">
+            <div class="autocomplete-error-message"></div>
+            <div class="global-chat-search-container">
+                <input type="text" name="global-chat-search" id="global-chat-search" class="typeahead"
+                       placeholder="Search for new chats" autocomplete="off" autocorrect="off" autocapitalize="off"
+                       spellcheck="false">
+            </div>
         </div>
-      </div>
     </div>
-  </div>
+</div>
 </body>
 
 </html>

@@ -18,6 +18,7 @@ const maxChatNameLength = 40;
 const maxUsernameSymbols = 15;
 const maxEmailSymbols = 254;
 const timeForEmailVerification = 5 * 60; //5 minutes IN SECONDS
+const timeForPasswordReset = 5 * 60; //5 minutes IN SECONDS
 const usernameRegex = /^[a-zA-Z0-9\s_]*$/;
 
 const isBehindProxy = false;
@@ -38,10 +39,14 @@ const isBehindProxy = false;
 // git checkout master - go to master branch
 // git push -u origin master - push master branch to github
 // git pull origin master - get the changes back
+// for development:
+// git reset --hard origin/master
 
 // pm2 start ecosystem.config.js
 // pm2 stop ecosystem.config.js
 
+// restart network
+//sudo service network-manager restart
 
 
 // recaptcha keys
@@ -108,12 +113,20 @@ const isBehindProxy = false;
 // TODO: rename .js and .css files to use _
 
 // !!!!!!!!!!!!!!!IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!
+// TODO: number of password reset attempts per account throttle
+// TODO: add number of guesses for password and email reset
+// TODO: replace signing up with creating a user and setting everything for them
+// TODO: send an email anyway if the account is not found for security
+// TODO: hide the token in DOM for password page?
 // TODO: refactor
-// TODO: change password
+// TODO: forgot password page
 // TODO: show people who joined the chat
 // TODO: notifications based on people joining
 // TODO: write tests
-
+// TODO: captcha for forgot password page and ratelimit
+// TODO: server side idle logout
+// TODO: hide keys from serverjs
+// TODO: hash email reset tokens
 
 
 // for release:
@@ -168,10 +181,13 @@ let utils = {
   cookiesNotToDeleteOnLogout: cookiesNotToDeleteOnLogout,
   defaultMessagesNum: defaultMessagesNum,
   usernameRegex: usernameRegex,
+  saltRounds: saltRounds,
   maxChatNameLength: maxChatNameLength,
   maxUsernameSymbols: maxUsernameSymbols,
   timeForEmailVerification: timeForEmailVerification,
+  timeForPasswordReset: timeForPasswordReset,
   maxEmailSymbols: maxEmailSymbols,
+  isBehindProxy: isBehindProxy,
   hostBase: isBehindProxy ? "https://chat.ibdc.ru" : "http://localhost:8124",
   hbs_render: hbs_render
 };
@@ -189,6 +205,7 @@ const chatSearchSuggestions = utils.chatSearchSuggestions = require('./utils/cha
 const messageEncrypt = utils.messageEncrypt = require('./utils/messageEncrypt')();
 const express_error_handlers = utils.express_error_handlers = require('./utils/express_error_handlers')(utils);
 const verificationEmail = utils.verificationEmail = require('./utils/verificationEmail')(utils);
+const resetPassword = utils.resetPassword = require('./utils/resetPassword')(utils);
 const expressCustomMiddleware = require('./utils/expressCustomMiddleware')(utils);
 
 //setup server
@@ -313,7 +330,7 @@ const longTermSendVerificationEmailLimiter = rateLimit({
   handler: rateLimitEmailsSentHandler
 });
 
-// email varify ratelimit long term
+// email verify ratelimit long term
 const longTermVerifyVerificationEmailLimiter = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 1 day
   max: 10,
@@ -355,7 +372,7 @@ hbs.registerPartial('enable_js', fs.readFileSync(__dirname + '/views/partials/en
 // redirect / to chatsList
 app.get("/", function(req, res) {
   res.redirect("/chats_list")
-})
+});
 
 // error 500
 app.get("/500_error", hbs_render);
@@ -371,14 +388,20 @@ app.get("/isAuthenticated", requests.isAuthenticated)
 app.get("/logout", setLogoutAnyway, auth.logout, hbs_render);
 
 // signup request
-app.post("/signUp", signupFailLimiter, signupSuccessLimiter, longTermSignupSuccessLimiter, expressCustomMiddleware.verifyCaptcha, signup.signUp);
+app.post("/signUp", csrfProtection, signupFailLimiter, signupSuccessLimiter, longTermSignupSuccessLimiter, expressCustomMiddleware.verifyCaptcha, signup.signUp);
 
-app.get("/sign_up", hbs_render);
+app.get("/sign_up", csrfProtection, hbs_render);
 
 app.get("/email_confirmation_link_sent", longTermSendVerificationEmailLimiter, verificationEmail.sendEmail, hbs_render);
 app.get("/email_confirmation_link", longTermVerifyVerificationEmailLimiter, verificationEmail.verifyEmail, hbs_render);
 
-// app.get("/forgot_password", csrfProtection, hbs_render);
+app.get("/forgot_password", csrfProtection, hbs_render);
+app.post("/reset_password", csrfProtection, resetPassword.sendEmail);
+
+app.get("/forgot_password_link", csrfProtection, expressCustomMiddleware.setHbsOption("ajaxErrorHandler", true), hbs_render);
+app.post("/forgot_password_link", csrfProtection, resetPassword.verifyEmail);
+
+
 
 //protected pages
 app.use(auth.isAuthenticated);
@@ -413,7 +436,7 @@ app.post("/createChat", createChatLimiter, csrfProtection, requests.addChatReque
 // joining the chat
 app.get("/chat_information", expressCustomMiddleware.isUserInChat, expressCustomMiddleware.getNumberOfChatUsersAndChatAdmissionType, csrfProtection, hbs_render);
 
-app.post("/joinChat", csrfProtection, requests.joinChat)
+app.post("/joinChat", csrfProtection, requests.joinChat);
 
 app.post("/requestAdmission", csrfProtection, requests.requestAdmission);
 
@@ -498,6 +521,7 @@ function hbs_render(req, res) {
     layout: false,
     csrfToken: csrfToken,
     jquerySource: jquerySource,
+    ajaxErrorHandler: options.ajaxErrorHandler,
     isUserInChat: options.isUserInChat,
     chatUsersNum: options.chatUsersNum,
     isCorrectToken: options.isCorrectToken,

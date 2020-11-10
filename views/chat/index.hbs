@@ -3,63 +3,66 @@
 
 <head>
 
-  {{> private ajaxErrorHandler="true"}}
+    {{> private ajaxErrorHandler="true"}}
 
-  <!-- Get socket.io -->
-  <script src="/socket.io/socket.io.js"></script>
+    <!-- Get socket.io -->
+    <script src="/socket.io/socket.io.js"></script>
 
-  <!-- xss library -->
-  <script src="https://rawgit.com/leizongmin/js-xss/master/dist/xss.js"></script>
+    <!-- xss library -->
+    <script src="https://rawgit.com/leizongmin/js-xss/master/dist/xss.js"></script>
 
-  <title>chat</title>
+    <title>chat</title>
 
-  <link rel="stylesheet" type="text/css" href="/css/chat.css">
+    <link rel="stylesheet" type="text/css" href="/css/chat.css">
 
 
-  <script src="/scripts/chat_time.js"></script>
-  <script src="/scripts/chat.js"></script>
+    <script src="/scripts/chat_time.js"></script>
+    <script src="/scripts/chat.js"></script>
 
 </head>
 
 <body>
-  {{> enable_js}}
-  <div class="page_container">
+{{> enable_js}}
+<div class="page_container">
     <div class="header">
-      <table class="header-aligner">
-        <tr>
-          <td>{{> backButton}}</td>
-          <td>
-            <h3 class="header-text chat-name"></h3>
-          </td>
-          <td></td>
-        </tr>
-      </table>
+        <table class="header-aligner">
+            <tr>
+                <td>{{> backButton}}</td>
+                <td>
+                    <h3 class="header-text chat-name"></h3>
+                </td>
+                <td></td>
+            </tr>
+        </table>
     </div>
 
     <div class="main-messaging">
-      <div class="messages-box">
-        <table class="messages-aligner">
-        </table>
-      </div>
+        <div class="messages-box">
+            <table class="messages-aligner">
+            </table>
+        </div>
 
-      <!-- sending messages -->
-      <div class="send-message">
-        <div class="errorMessage"></div>
-        <table class="send-message-table">
-          <tr>
-            <td>
-              <!-- no autocorrection -->
-              <textarea name="type-message" class="type-message" id="type-message" rows="4" placeholder="Type your message here" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
-            </td>
-            <td style="width:20%">
-              <button type="button" class="send-button" id="send-message-button">Send</button><div class="character_counter">
-              </div>
-            </td>
-          </tr>
-        </table>
-      </div>
+        <!-- sending messages -->
+        <div class="send-message">
+            <div class="errorMessage"></div>
+            <table class="send-message-table">
+                <tr>
+                    <td>
+                        <!-- no autocorrection -->
+                        <textarea name="type-message" class="type-message" id="type-message" rows="4"
+                                  placeholder="Type your message here" autocomplete="off" autocorrect="off"
+                                  autocapitalize="off" spellcheck="false"></textarea>
+                    </td>
+                    <td style="width:20%">
+                        <button type="button" class="send-button" id="send-message-button">Send</button>
+                        <div class="character_counter">
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
     </div>
-  </div>
+</div>
 
 </body>
 

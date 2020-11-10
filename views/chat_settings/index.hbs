@@ -3,47 +3,47 @@
 
 <head>
 
-  {{> private ajaxErrorHandler="true"}}
+    {{> private ajaxErrorHandler="true"}}
 
-  <title>Chat settings</title>
+    <title>Chat settings</title>
 
-  <!-- css -->
+    <!-- css -->
 
-  <link rel="stylesheet" type="text/css" href="/css/chat_settings.css">
+    <link rel="stylesheet" type="text/css" href="/css/chat_settings.css">
 
-  <!-- scripts -->
-  <script src="/scripts/chat_settings.js"></script>
+    <!-- scripts -->
+    <script src="/scripts/chat_settings.js"></script>
 </head>
 
 <body>
-  {{> enable_js}}
-  <div class="page_container">
+{{> enable_js}}
+<div class="page_container">
     <div class="header">
-      <table class="header-aligner">
-        <tr>
-          <td>
-            {{> backButton}}
-          </td>
-          <td>
-            <h3 class="header-text" id="users-chats">Chat settings</h3>
-          </td>
-          <td></td>
-        </tr>
-      </table>
+        <table class="header-aligner">
+            <tr>
+                <td>
+                    {{> backButton}}
+                </td>
+                <td>
+                    <h3 class="header-text" id="users-chats">Chat settings</h3>
+                </td>
+                <td></td>
+            </tr>
+        </table>
     </div>
 
     <div class="body-container">
-      <div class="error-message"></div>
-      <div class="settings-box">
+        <div class="error-message"></div>
+        <div class="settings-box">
 
-        <div class="admissions-box">
-          <h4>Admission requests</h4>
-          <table id="admissions-aligner" style="width:100%">
-          </table>
+            <div class="admissions-box">
+                <h4>Admission requests</h4>
+                <table id="admissions-aligner" style="width:100%">
+                </table>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
+</div>
 </body>
 
 </html>
